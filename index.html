@@ -824,8 +824,8 @@
             const toName = nameMap[r.toStudentId] || "кого-то";
             
             // Определяем текст действия
-            let actionText = `отправил(а) ${r.emoji} для`;
-            if (r.isTeacher) actionText = `похвалил(а) ${r.emoji}`;
+            let actionText = `sent ${r.emoji} to`;
+            if (r.isTeacher) actionText = `sent ${r.emoji}`;
 
             return `
                 <div class="flex items-center gap-3 p-3 bg-white rounded-2xl animate-slide-up border border-slate-100 shadow-sm">
@@ -838,19 +838,13 @@
                             <span class="text-slate-500 font-medium"> ${actionText} </span>
                             <span class="font-black text-slate-800">${toName}</span>
                         </div>
-                        <div class="text-[10px] text-slate-400 font-bold mt-0.5 uppercase tracking-tight">
+                        <div class="text-[10px] text-slate-400 mt-0.5 uppercase tracking-tight">
                             ${formatRelativeTime(r.timestamp)}
                         </div>
                     </div>
                 </div>`;
         }).join('');
     } catch (e) {
-        console.error("Activity Error:", e);
-        if (e.message.includes("index")) {
-            container.innerHTML = `<div class="text-[10px] p-4 bg-rose-50 text-rose-500 rounded-xl">
-                Нужен индекс. Нажми F12 и перейди по ссылке в консоли.
-            </div>`;
-        }
     }
 },
 
