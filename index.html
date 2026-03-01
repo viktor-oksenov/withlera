@@ -1422,63 +1422,79 @@
             },
             
             sendReaction: async (emoji) => {
-                let senderId = currentStudentId;
-                let isTeacher = false;
-                if (!senderId && auth.currentUser) {
-                    senderId = auth.currentUser.uid;
-                    isTeacher = true;
-                }
-                
-                if (!senderId || !currentReactionTargetId) return;
-                const reactionId = `${senderId}_${currentReactionTargetId}`;
-                
-                try {
-                    const snap = await getDocs(getColPath('reactions'));
-                    const myReactions = snap.docs.map(d => d.data()).filter(r => r.fromStudentId === senderId);
-                    const existingToTarget = myReactions.find(r => r.toStudentId === currentReactionTargetId);
-                    
-                    if (!isTeacher) {
-                          if (!existingToTarget && myReactions.length >= 2) {
-                            notify("Max 2 reactions allowed!", "error");
-                            app.closeEmojiModal();
-                            return;
-                        }
-                    } 
+    let senderId = currentStudentId;
+    let isTeacher = false;
+    let teacherId = null;
 
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reactions', reactionId), {
-                        fromStudentId: senderId,
-                        toStudentId: currentReactionTargetId,
-                        emoji: emoji,
-                        timestamp: Date.now(),
-                        isTeacher: isTeacher
-                    });
-                    
-                    if (!isTeacher && currentStudentData) {
-                        const today = new Date().toISOString().slice(0, 10);
-                        const lastDate = currentStudentData.lastRewardDate;
-                        if (lastDate !== today) {
-                            const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', currentStudentId);
-                            const newBonus = (currentStudentData.bonusPoints || 0) + 1;
-                            currentStudentData.bonusPoints = newBonus;
-                            currentStudentData.lastRewardDate = today;
-                            await updateDoc(studentRef, { bonusPoints: newBonus, lastRewardDate: today });
-                            notify("Daily Quest Completed! +1 Point 💎", "success");
-                        } else {
-                             notify("Reaction sent!", "success");
-                        }
-                    } else {
-                        notify("Reaction sent!", "success");
-                    }
-                    
-                    app.closeEmojiModal();
-                    
-                    if (isTeacher) loadTeacherLeaderboard();
-                    else {
-                        if (activeStudentTab === 'quests') loadStudentQuests();
-                        else loadStudentLeaderboard(); 
-                    }
-                } catch (e) { console.error(e); notify("Send error", "error"); }
-            },
+    // Определяем, кто отправляет и какой ID учителя привязать
+    if (!senderId && auth.currentUser) {
+        senderId = auth.currentUser.uid;
+        isTeacher = true;
+        teacherId = auth.currentUser.uid; // Учитель сам себе хозяин
+    } else if (currentStudentData) {
+        teacherId = currentStudentData.teacherId; // Берем ID учителя из профиля студента
+    }
+
+    if (!senderId || !currentReactionTargetId || !teacherId) return;
+    const reactionId = `${senderId}_${currentReactionTargetId}`;
+
+    try {
+        // ИСПРАВЛЕНИЕ: Запрос только своих реакций (чтобы не было ошибки доступа)
+        const q = query(getColPath('reactions'), where('teacherId', '==', teacherId));
+        const snap = await getDocs(q);
+        
+        const myReactions = snap.docs.map(d => d.data()).filter(r => r.fromStudentId === senderId);
+        const existingToTarget = myReactions.find(r => r.toStudentId === currentReactionTargetId);
+
+        if (!isTeacher) {
+            if (!existingToTarget && myReactions.length >= 2) {
+                notify("Max 2 reactions allowed!", "error");
+                app.closeEmojiModal();
+                return;
+            }
+        }
+
+        // ИСПРАВЛЕНИЕ: Добавляем teacherId в документ
+        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reactions', reactionId), {
+            fromStudentId: senderId,
+            toStudentId: currentReactionTargetId,
+            teacherId: teacherId, // КРИТИЧЕСКИ ВАЖНО ДЛЯ ПРАВИЛ
+            emoji: emoji,
+            timestamp: Date.now(),
+            isTeacher: isTeacher
+        });
+
+        if (!isTeacher && currentStudentData) {
+            const today = new Date().toISOString().slice(0, 10);
+            const lastDate = currentStudentData.lastRewardDate;
+            if (lastDate !== today) {
+                const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', currentStudentId);
+                const newBonus = (currentStudentData.bonusPoints || 0) + 1;
+                currentStudentData.bonusPoints = newBonus;
+                currentStudentData.lastRewardDate = today;
+                await updateDoc(studentRef, { bonusPoints: newBonus, lastRewardDate: today });
+                notify("Daily Quest Completed! +1 Point 💎", "success");
+            } else {
+                notify("Reaction sent!", "success");
+            }
+        } else {
+            notify("Reaction sent!", "success");
+        }
+
+        app.closeEmojiModal();
+
+        // Обновляем нужную вкладку
+        if (isTeacher) {
+            loadTeacherLeaderboard();
+        } else {
+            if (activeStudentTab === 'quests') loadStudentQuests();
+            else loadStudentLeaderboard();
+        }
+    } catch (e) { 
+        console.error("Ошибка при отправке реакции:", e); 
+        notify("Send error", "error"); 
+    }
+},
             
             deleteReaction: async () => {
                 let senderId = currentStudentId;
@@ -1510,56 +1526,87 @@
             },
 
             submitSupportQuest: async () => {
-                const text = document.getElementById('support-message-text').value.trim();
-                if (text.length < 5) return notify("Message too short", "error");
+    const text = document.getElementById('support-message-text').value.trim();
+    if (text.length < 5) return notify("Message too short", "error");
+    if (!currentStudentData || !currentStudentData.teacherId) return notify("Auth error", "error");
 
-                try {
-                    const studentsSnap = await getDocs(getColPath('students'));
-                    const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === currentStudentData.teacherId && s.id !== currentStudentId);
-                    const msgsSnap = await getDocs(getColPath('support_messages'));
-                    const receivedIds = new Set(msgsSnap.docs.map(d => d.data().toStudentId));
-                    const candidates = classmates.filter(s => !receivedIds.has(s.id));
+    const teacherId = currentStudentData.teacherId;
 
-                    let targetId;
-                    if (candidates.length > 0) {
-                          const target = candidates[Math.floor(Math.random() * candidates.length)];
-                          targetId = target.id;
-                    } else {
-                        if (classmates.length === 0) return notify("You are alone in class...", "error");
-                        const target = classmates[Math.floor(Math.random() * classmates.length)];
-                        targetId = target.id;
-                    }
+    try {
+        // 1. Получаем одноклассников только своего учителя
+        const studentsSnap = await getDocs(query(
+            getColPath('students'), 
+            where('teacherId', '==', teacherId)
+        ));
+        
+        const classmates = studentsSnap.docs
+            .map(d => ({id: d.id, ...d.data()}))
+            .filter(s => s.id !== currentStudentId);
 
-                    await addDoc(getColPath('support_messages'), {
-                        fromStudentId: currentStudentId,
-                        fromName: currentStudentData.name, 
-                        toStudentId: targetId,
-                        message: text,
-                        timestamp: Date.now(),
-                        isRead: false
-                    });
+        // 2. Получаем сообщения поддержки только своего учителя
+        const msgsSnap = await getDocs(query(
+            getColPath('support_messages'), 
+            where('teacherId', '==', teacherId)
+        ));
+        
+        const receivedIds = new Set(msgsSnap.docs.map(d => d.data().toStudentId));
+        const candidates = classmates.filter(s => !receivedIds.has(s.id));
 
-                    const today = new Date().toISOString().slice(0, 10);
-                    const newBonus = (currentStudentData.bonusPoints || 0) + 1;
-                    currentStudentData.bonusPoints = newBonus;
-                    currentStudentData.lastSupportQuestDate = today;
+        let targetId;
+        if (candidates.length > 0) {
+            const target = candidates[Math.floor(Math.random() * candidates.length)];
+            targetId = target.id;
+        } else {
+            if (classmates.length === 0) return notify("You are alone in class...", "error");
+            const target = classmates[Math.floor(Math.random() * classmates.length)];
+            targetId = target.id;
+        }
 
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', currentStudentId), {
-                        bonusPoints: newBonus,
-                        lastSupportQuestDate: today
-                    });
+        // 3. Создаем сообщение с привязкой к учителю (ОБЯЗАТЕЛЬНО для правил)
+        await addDoc(getColPath('support_messages'), {
+            fromStudentId: currentStudentId,
+            fromName: currentStudentData.name, 
+            toStudentId: targetId,
+            teacherId: teacherId, // Добавили поле
+            message: text,
+            timestamp: Date.now(),
+            isRead: false
+        });
 
-                    notify("Random message sent! +1 Point 💎", "success");
-                    app.closeSupportModal();
-                    app.setStudentTab('quests'); 
+        // 4. Начисляем бонус
+        const today = new Date().toISOString().slice(0, 10);
+        const newBonus = (currentStudentData.bonusPoints || 0) + 1;
+        
+        currentStudentData.bonusPoints = newBonus;
+        currentStudentData.lastSupportQuestDate = today;
 
-                } catch (e) { console.error(e); notify("Error sending message", "error"); }
-            },
+        await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', currentStudentId), {
+            bonusPoints: newBonus,
+            lastSupportQuestDate: today
+        });
+
+        notify("Random message sent! +1 Point 💎", "success");
+        app.closeSupportModal();
+        app.setStudentTab('quests'); 
+
+    } catch (e) { 
+        console.error("Ошибка квеста поддержки:", e); 
+        notify("Error sending message", "error"); 
+    }
+},
             
             checkIncomingSupport: async () => {
-                if (!currentStudentId) return;
-                const q = query(getColPath('support_messages'), where('toStudentId', '==', currentStudentId), where('isRead', '==', false));
-                const snap = await getDocs(q);
+                if (!currentStudentId || !currentStudentData) return;
+    
+    // Добавляем фильтр по учителю и получателю
+    const q = query(
+        getColPath('support_messages'), 
+        where('teacherId', '==', currentStudentData.teacherId), // Фильтр учителя
+        where('toStudentId', '==', currentStudentId), 
+        where('isRead', '==', false)
+    );
+    
+    const snap = await getDocs(q);
                 if (!snap.empty) {
                     const msgDoc = snap.docs[0];
                     const msgData = msgDoc.data();
@@ -1579,27 +1626,35 @@
                 } catch(e) { document.getElementById('modal-receive-support').classList.add('hidden'); }
             },
 
-            studentLogin: async () => {
+studentLogin: async () => {
                 const phrase = document.getElementById('s-phrase').value.trim().toLowerCase();
                 try {
-                    const snap = await getDocs(getColPath('students'));
-                    const student = snap.docs.find(d => d.data().phrase === phrase);
-                    if (!student) return notify("Invalid code", "error");
+                    // ИСПРАВЛЕНИЕ: Ищем конкретного студента по фразе, а не выкачиваем всю базу
+                    const q = query(getColPath('students'), where('phrase', '==', phrase), limit(1));
+                    const snap = await getDocs(q);
                     
-                    localStorage.setItem('student_id', student.id);
-                    currentStudentId = student.id;
-                    currentStudentData = student.data();
+                    if (snap.empty) return notify("Invalid code", "error");
+                    
+                    const studentDoc = snap.docs[0];
+                    const studentId = studentDoc.id;
+                    const studentData = studentDoc.data();
+                    
+                    localStorage.setItem('student_id', studentId);
+                    currentStudentId = studentId;
+                    currentStudentData = studentData;
 
-                    document.getElementById('student-name-display').textContent = student.data().name;
-                    document.getElementById('student-phrase-display').textContent = student.data().phrase;
+                    document.getElementById('student-name-display').textContent = studentData.name;
+                    document.getElementById('student-phrase-display').textContent = studentData.phrase;
                     window.app.showScreen('screen-student-dash');
                     
                     loadStudentTasks();
                     setTimeout(app.checkIncomingSupport, 1000);
                     
-                } catch (e) { notify("Error", "error"); }
+                } catch (e) { 
+                    console.error("Login error:", e);
+                    notify("Error", "error"); 
+                }
             },
-
             submitTask: async (taskId, correct, deadlineSec, answerType) => {
                 const val = document.getElementById(`input-${taskId}`).value.trim();
                 if (!val) return notify("Enter answer", "error");
@@ -1683,41 +1738,59 @@
         };
 
         async function loadMyStudents() {
-            if (!auth.currentUser) return;
-            const studentsSnap = await getDocs(getColPath('students'));
-            const list = document.getElementById('student-list');
-            const checklist = document.getElementById('student-checklist');
-            const myStudents = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === auth.currentUser.uid);
-            
-            let listHtml = '';
-            let checklistHtml = '';
+    if (!auth.currentUser) return;
+    const teacherId = auth.currentUser.uid;
+    const list = document.getElementById('student-list');
+    const checklist = document.getElementById('student-checklist');
 
-            myStudents.forEach(s => {
-                listHtml += `
-                    <div class="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col items-center text-center group relative shadow-sm">
-                        <button onclick="app.deleteStudent('${s.id}')" class="absolute top-4 right-4 text-slate-200 hover:text-rose-500 transition-colors p-2">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
-                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl font-black mb-4">${s.name[0]}</div>
-                        <h4 class="font-black text-slate-800 truncate w-full px-4 mb-2">${s.name}</h4>
-                        <div class="bg-slate-50 border border-slate-100 text-slate-500 px-4 py-2 rounded-xl text-xs font-mono font-bold mt-2 break-all">${s.phrase}</div>
-                    </div>`;
+    try {
+        // ИСПРАВЛЕНИЕ: Запрашиваем только тех студентов, которые привязаны к этому учителю
+        const q = query(getColPath('students'), where('teacherId', '==', teacherId));
+        const studentsSnap = await getDocs(q);
+        
+        const myStudents = studentsSnap.docs.map(d => ({id: d.id, ...d.data()}));
+        
+        let listHtml = '';
+        let checklistHtml = '';
 
-                checklistHtml += `
-                    <label class="group flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-slate-50 cursor-pointer hover:border-indigo-400 transition-all">
-                        <input type="checkbox" value="${s.id}" data-name="${s.name}" class="student-checkbox peer sr-only">
-                        <div class="w-6 h-6 border-2 border-slate-200 rounded-lg peer-checked:bg-indigo-600 peer-checked:border-indigo-600 flex items-center justify-center transition-all">
-                            <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100"></i>
-                        </div>
-                        <span class="font-bold text-slate-700">${s.name}</span>
-                    </label>`;
-            });
+        myStudents.forEach(s => {
+            // Карточка студента для списка
+            listHtml += `
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col items-center text-center group relative shadow-sm">
+                    <button onclick="app.deleteStudent('${s.id}')" class="absolute top-4 right-4 text-slate-200 hover:text-rose-500 transition-colors p-2">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl font-black mb-4">${s.name ? s.name[0] : '?'}</div>
+                    <h4 class="font-black text-slate-800 truncate w-full px-4 mb-2">${s.name}</h4>
+                    <div class="bg-slate-50 border border-slate-100 text-slate-500 px-4 py-2 rounded-xl text-xs font-mono font-bold mt-2 break-all">${s.phrase}</div>
+                </div>`;
 
+            // Чекбокс студента для создания задач (Wizard)
+            checklistHtml += `
+                <label class="group flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-slate-50 cursor-pointer hover:border-indigo-400 transition-all">
+                    <input type="checkbox" value="${s.id}" data-name="${s.name}" class="student-checkbox peer sr-only">
+                    <div class="w-6 h-6 border-2 border-slate-200 rounded-lg peer-checked:bg-indigo-600 peer-checked:border-indigo-600 flex items-center justify-center transition-all">
+                        <i data-lucide="check" class="w-4 h-4 text-white opacity-0 peer-checked:opacity-100"></i>
+                    </div>
+                    <span class="font-bold text-slate-700">${s.name}</span>
+                </label>`;
+        });
+
+        // Если студентов нет, выводим заглушку
+        if (myStudents.length === 0) {
+            list.innerHTML = '<div class="col-span-full text-center py-10 text-slate-400 font-bold">No students yet</div>';
+        } else {
             list.innerHTML = listHtml;
-            checklist.innerHTML = checklistHtml;
-            lucide.createIcons();
         }
 
+        checklist.innerHTML = checklistHtml;
+        lucide.createIcons();
+
+    } catch (e) {
+        console.error("Error loading students:", e);
+        notify("Failed to load students", "error");
+    }
+}
        async function loadTeacherTasks() {
             if (!auth.currentUser) return;
             document.getElementById('teacher-tasks-list').innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 font-bold animate-pulse">Loading tasks...</div>';
@@ -1895,42 +1968,49 @@ const draftsSnap = await getDocs(qDrafts);
     }
 
     async function loadStatistics() {
-            if (!auth.currentUser) return;
-            const [studentsSnap, tasksSnap] = await Promise.all([ getDocs(getColPath('students')), getDocs(getColPath('tasks')) ]);
-            const students = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === auth.currentUser.uid);
-            const tasks = tasksSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(t => t.teacherId === auth.currentUser.uid);
-            const completedTasks = tasks.filter(t => t.status === 'completed').sort((a, b) => a.completedAt - b.completedAt);
-            const dates = [...new Set(completedTasks.map(t => new Date(t.completedAt).toLocaleDateString()))];
-            const colors = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
-            
-            const datasets = students.map((s, idx) => {
-                let cumulative = 0;
-                const offset = idx * 0.1; 
-                return {
-                    label: s.name,
-                    data: dates.map(date => {
-                        const dayScore = completedTasks.filter(t => t.studentId === s.id && new Date(t.completedAt).toLocaleDateString() === date).reduce((acc, c) => acc + (c.score || 0), 0);
-                        cumulative += dayScore;
-                        return cumulative + offset;
-                    }),
-                    borderColor: colors[idx % colors.length],
-                    backgroundColor: colors[idx % colors.length],
-                    tension: 0.4, fill: false, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5
-                };
-            });
+    if (!auth.currentUser) return;
+    const teacherId = auth.currentUser.uid;
 
-            if (statsChart) statsChart.destroy();
-            statsChart = new Chart(document.getElementById('statsChart'), {
-                type: 'line',
-                data: { labels: dates, datasets },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8 } } },
-                    scales: { y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { callback: function(value) { if (value % 1 === 0) return value; } } }, x: { grid: { display: false } } } 
-                }
-            });
-    }
+    // ИСПРАВЛЕНИЕ: Заменяем обычный getDocs на запрос с фильтром по teacherId
+    const [studentsSnap, tasksSnap] = await Promise.all([ 
+        getDocs(query(getColPath('students'), where('teacherId', '==', teacherId))), 
+        getDocs(query(getColPath('tasks'), where('teacherId', '==', teacherId))) 
+    ]);
+
+    const students = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
+    const tasks = tasksSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(t => t.teacherId === teacherId);
+    const completedTasks = tasks.filter(t => t.status === 'completed').sort((a, b) => a.completedAt - b.completedAt);
+    const dates = [...new Set(completedTasks.map(t => new Date(t.completedAt).toLocaleDateString()))];
+    const colors = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
+    
+    const datasets = students.map((s, idx) => {
+        let cumulative = 0;
+        const offset = idx * 0.1; 
+        return {
+            label: s.name,
+            data: dates.map(date => {
+                const dayScore = completedTasks.filter(t => t.studentId === s.id && new Date(t.completedAt).toLocaleDateString() === date).reduce((acc, c) => acc + (c.score || 0), 0);
+                cumulative += dayScore;
+                return cumulative + offset;
+            }),
+            borderColor: colors[idx % colors.length],
+            backgroundColor: colors[idx % colors.length],
+            tension: 0.4, fill: false, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5
+        };
+    });
+
+    if (statsChart) statsChart.destroy();
+    statsChart = new Chart(document.getElementById('statsChart'), {
+        type: 'line',
+        data: { labels: dates, datasets },
+        options: { 
+            responsive: true, maintainAspectRatio: false, 
+            interaction: { mode: 'index', intersect: false },
+            plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8 } } },
+            scales: { y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { callback: function(value) { if (value % 1 === 0) return value; } } }, x: { grid: { display: false } } } 
+        }
+    });
+}
 
     function getReactionHTML(r) {
         const now = Date.now();
@@ -1960,103 +2040,140 @@ const draftsSnap = await getDocs(qDrafts);
     }
 
     async function loadTeacherLeaderboard() {
-        if (!auth.currentUser) return;
-        const teacherId = auth.currentUser.uid;
+    if (!auth.currentUser) return;
+    const teacherId = auth.currentUser.uid;
+    const container = document.getElementById('teacher-rating-list');
+
+    try {
+        // ВАЖНО: Все запросы теперь содержат фильтр .where('teacherId', '==', teacherId)
+        // Это исключает уязвимости и соответствует правилам Firestore
         const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([
-    getDocs(query(getColPath('students'), where('teacherId', '==', teacherId))),
-    getDocs(query(getColPath('tasks'), where('teacherId', '==', teacherId))),
-    getDocs(getColPath('reactions')) // Реакции обычно общие или фильтруются в коде
-]);
-        const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
-        const container = document.getElementById('teacher-rating-list');
+            getDocs(query(getColPath('students'), where('teacherId', '==', teacherId))),
+            getDocs(query(getColPath('tasks'), where('teacherId', '==', teacherId))),
+            getDocs(query(getColPath('reactions'), where('teacherId', '==', teacherId))) 
+        ]);
+
+        const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()}));
+
         if (classmates.length === 0) {
             container.innerHTML = '<div class="text-center text-slate-300 py-20 font-bold italic">Class is empty</div>';
-        } else {
-            const allTasks = tasksSnap.docs.map(d => d.data()).filter(t => t.teacherId === teacherId);
-            const allReactions = reactionsSnap.docs.map(d => d.data());
-            const scores = {};
-            classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
-            allTasks.forEach(t => { if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0); });
-            const leaderboard = classmates.map(s => ({ id: s.id, name: s.name, score: scores[s.id] })).sort((a, b) => b.score - a.score);
-            let html = `<div class="bg-white rounded-[2rem] border border-slate-100 p-2">`;
-            leaderboard.forEach((user, index) => {
-                const rank = index + 1;
-                const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
-                const myReactionToHim = receivedReactions.find(r => r.fromStudentId === teacherId);
-                let iconColor = 'bg-slate-100 text-slate-500';
-                let iconContent = rank;
-                if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
-                else if (rank === 2) { iconColor = 'bg-slate-200 text-slate-600'; iconContent = '2'; }
-                else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
-
-                html += `
-                <div class="flex items-center gap-4 p-4 rounded-2xl">
-                    <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">${iconContent}</div>
-                    <div class="flex-grow min-w-0">
-                        <div class="font-bold text-slate-700 text-lg truncate">${user.name}</div>
-                        <div class="flex flex-wrap gap-1 mt-1 items-center">
-                            ${receivedReactions.map(r => getReactionHTML(r)).join('')}
-                            <button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-200' : ''}">
-                                <i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="font-black text-xl text-slate-800">${user.score}</div>
-                </div>
-                ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
-                `;
-            });
-            html += `</div>`;
-            container.innerHTML = html;
+            return;
         }
-    }
 
-    async function loadStudentLeaderboard() {
-        if (!currentStudentData || !currentStudentId) return;
-        const teacherId = currentStudentData.teacherId;
-        const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([ getDocs(getColPath('students')), getDocs(getColPath('tasks')), getDocs(getColPath('reactions')) ]);
-        const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
-        const allTasks = tasksSnap.docs.map(d => d.data()).filter(t => t.teacherId === teacherId);
+        const allTasks = tasksSnap.docs.map(d => d.data());
         const allReactions = reactionsSnap.docs.map(d => d.data());
+
         const scores = {};
         classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
-        allTasks.forEach(t => { if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0); });
-        const leaderboard = classmates.map(s => ({ id: s.id, name: s.id === currentStudentId ? "You" : "Student", realName: s.name, score: scores[s.id] })).sort((a, b) => b.score - a.score);
-        const container = document.getElementById('student-rating-list');
-        const myRankIndex = leaderboard.findIndex(x => x.id === currentStudentId);
-        if (myRankIndex === -1) { container.innerHTML = '<div class="text-center text-slate-400">You are not on the list yet.</div>'; return; }
         
-        let html = '<div class="bg-white rounded-[2rem] border border-slate-100 p-2">';
+        allTasks.forEach(t => { 
+            if (scores[t.studentId] !== undefined) {
+                scores[t.studentId] += (t.score || 0); 
+            }
+        });
+
+        const leaderboard = classmates.map(s => ({ 
+            id: s.id, 
+            name: s.name, 
+            score: scores[s.id] 
+        })).sort((a, b) => b.score - a.score);
+
+        let html = `<div class="bg-white rounded-[2rem] border border-slate-100 p-2">`;
+        
         leaderboard.forEach((user, index) => {
             const rank = index + 1;
-            const isMe = user.id === currentStudentId;
             const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
-            const myReactionToHim = receivedReactions.find(r => r.fromStudentId === currentStudentId);
+            const myReactionToHim = receivedReactions.find(r => r.fromStudentId === teacherId);
+            
             let iconColor = 'bg-slate-100 text-slate-500';
             let iconContent = rank;
+            
             if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
             else if (rank === 2) { iconColor = 'bg-slate-200 text-slate-600'; iconContent = '2'; }
             else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
 
             html += `
-            <div class="flex items-center gap-4 p-4 rounded-2xl ${isMe ? 'bg-blue-50/50 border border-blue-100/50' : ''}">
+            <div class="flex items-center gap-4 p-4 rounded-2xl">
                 <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">${iconContent}</div>
                 <div class="flex-grow min-w-0">
-                    <div class="font-bold ${isMe ? 'text-blue-700' : 'text-slate-700'} text-lg truncate">${user.name} ${isMe ? '(You)' : ''}</div>
-                    <div class="flex flex-wrap gap-1 mt-1">
+                    <div class="font-bold text-slate-700 text-lg truncate">${user.name}</div>
+                    <div class="flex flex-wrap gap-1 mt-1 items-center">
                         ${receivedReactions.map(r => getReactionHTML(r)).join('')}
-                        ${!isMe ? `<button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-200' : ''}"><i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i></button>` : ''}
+                        <button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-200' : ''}">
+                            <i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="font-black text-xl ${isMe ? 'text-blue-600' : 'text-slate-800'}">${user.score}</div>
+                <div class="font-black text-xl text-slate-800">${user.score}</div>
             </div>
             ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
             `;
         });
+
         html += `</div>`;
         container.innerHTML = html;
         lucide.createIcons();
+
+    } catch (error) {
+        console.error("Ошибка загрузки лидерборда:", error);
+        // Если видишь ошибку "The query requires an index", нажми на ссылку в консоли!
     }
+}
+
+    async function loadStudentLeaderboard() {
+    if (!currentStudentData || !currentStudentId) return;
+    const teacherId = currentStudentData.teacherId;
+
+    // ИСПРАВЛЕНИЕ: Используем query и where, чтобы запрашивать только данные своего класса
+    const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([ 
+        getDocs(query(getColPath('students'), where('teacherId', '==', teacherId))), 
+        getDocs(query(getColPath('tasks'), where('teacherId', '==', teacherId))), 
+        getDocs(query(getColPath('reactions'), where('teacherId', '==', teacherId))) 
+    ]);
+
+    const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
+    const allTasks = tasksSnap.docs.map(d => d.data()).filter(t => t.teacherId === teacherId);
+    const allReactions = reactionsSnap.docs.map(d => d.data());
+    
+    const scores = {};
+    classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
+    allTasks.forEach(t => { if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0); });
+    const leaderboard = classmates.map(s => ({ id: s.id, name: s.id === currentStudentId ? "You" : "Student", realName: s.name, score: scores[s.id] })).sort((a, b) => b.score - a.score);
+    const container = document.getElementById('student-rating-list');
+    const myRankIndex = leaderboard.findIndex(x => x.id === currentStudentId);
+    if (myRankIndex === -1) { container.innerHTML = '<div class="text-center text-slate-400">You are not on the list yet.</div>'; return; }
+    
+    let html = '<div class="bg-white rounded-[2rem] border border-slate-100 p-2">';
+    leaderboard.forEach((user, index) => {
+        const rank = index + 1;
+        const isMe = user.id === currentStudentId;
+        const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
+        const myReactionToHim = receivedReactions.find(r => r.fromStudentId === currentStudentId);
+        let iconColor = 'bg-slate-100 text-slate-500';
+        let iconContent = rank;
+        if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
+        else if (rank === 2) { iconColor = 'bg-slate-200 text-slate-600'; iconContent = '2'; }
+        else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
+
+        html += `
+        <div class="flex items-center gap-4 p-4 rounded-2xl ${isMe ? 'bg-blue-50/50 border border-blue-100/50' : ''}">
+            <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">${iconContent}</div>
+            <div class="flex-grow min-w-0">
+                <div class="font-bold ${isMe ? 'text-blue-700' : 'text-slate-700'} text-lg truncate">${user.name} ${isMe ? '(You)' : ''}</div>
+                <div class="flex flex-wrap gap-1 mt-1">
+                    ${receivedReactions.map(r => getReactionHTML(r)).join('')}
+                    ${!isMe ? `<button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-200' : ''}"><i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i></button>` : ''}
+                </div>
+            </div>
+            <div class="font-black text-xl ${isMe ? 'text-blue-600' : 'text-slate-800'}">${user.score}</div>
+        </div>
+        ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
+        `;
+    });
+    html += `</div>`;
+    container.innerHTML = html;
+    lucide.createIcons();
+}
 
     async function loadStudentQuests() {
         if (!currentStudentId) return;
