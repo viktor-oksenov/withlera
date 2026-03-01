@@ -106,6 +106,17 @@
             100% { transform: scale(1); }
         }
         .emoji-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        
+        /* Skeleton loading for images */
+        .img-skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body class="bg-[#F8FAFC] text-slate-900 min-h-screen font-medium">
@@ -138,7 +149,7 @@
         </div>
     </div>
 
-    <!-- MODAL: RECEIVE SUPPORT (NEW) -->
+    <!-- MODAL: RECEIVE SUPPORT -->
     <div id="modal-receive-support" class="fixed inset-0 z-[190] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-md"></div>
         <div class="relative bg-white w-full max-w-sm rounded-[2rem] shadow-2xl p-8 animate-slide-up text-center">
@@ -189,7 +200,6 @@
                 <p id="reaction-hint" class="text-xs text-slate-400 font-bold mt-1">Max 2 for the whole class</p>
             </div>
             <div class="grid grid-cols-4 gap-3 mb-6">
-                <!-- Emojis will be injected here -->
                 <button onclick="app.sendReaction('🔥')" class="text-3xl hover:bg-slate-50 p-3 rounded-2xl transition-colors">🔥</button>
                 <button onclick="app.sendReaction('❤️')" class="text-3xl hover:bg-slate-50 p-3 rounded-2xl transition-colors">❤️</button>
                 <button onclick="app.sendReaction('🚀')" class="text-3xl hover:bg-slate-50 p-3 rounded-2xl transition-colors">🚀</button>
@@ -307,7 +317,6 @@
                 <p class="text-slate-500 mb-6 text-sm font-medium">Send a kind message to earn +1 point!</p>
                 
                 <div class="w-full space-y-4">
-                    <!-- Dropdown removed as per request for random assignment -->
                     <div class="bg-slate-50 p-4 rounded-2xl text-slate-500 text-sm font-bold border-2 border-dashed border-slate-200">
                         <i data-lucide="shuffle" class="w-4 h-4 inline-block mr-1 mb-0.5"></i>
                         Your message will be sent to a random classmate!
@@ -421,7 +430,7 @@
                             <div id="wizard-step-1" class="space-y-6 max-w-xl mx-auto">
                                 <textarea id="task-text" rows="4" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-medium text-lg resize-none" placeholder="What needs to be done?"></textarea>
                                 
-                                <!-- Image Input Section (Updated for up to 3 photos) -->
+                                <!-- Image Input Section -->
                                 <div>
                                     <label class="block text-sm font-bold text-slate-400 mb-2 ml-2 uppercase tracking-wide">Images (Max 3)</label>
                                     
@@ -442,20 +451,20 @@
                                 
                                 <!-- Answer Type Selection -->
                                 <div class="bg-slate-100 p-1.5 rounded-2xl flex gap-1">
-    <label class="flex-1 cursor-pointer">
-        <input type="radio" name="answerType" value="mixed" class="peer sr-only" checked onchange="app.updateAnswerTypeUI()">
-        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
-            <span>✨</span> Auto Check
-        </div>
-    </label>
+                                    <label class="flex-1 cursor-pointer">
+                                        <input type="radio" name="answerType" value="mixed" class="peer sr-only" checked onchange="app.updateAnswerTypeUI()">
+                                        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
+                                            <span>✨</span> Auto Check
+                                        </div>
+                                    </label>
 
-    <label class="flex-1 cursor-pointer">
-        <input type="radio" name="answerType" value="manual" class="peer sr-only" onchange="app.updateAnswerTypeUI()">
-        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
-            <span>👁️</span> Manual Review
-        </div>
-    </label>
-</div>
+                                    <label class="flex-1 cursor-pointer">
+                                        <input type="radio" name="answerType" value="manual" class="peer sr-only" onchange="app.updateAnswerTypeUI()">
+                                        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
+                                            <span>👁️</span> Manual Review
+                                        </div>
+                                    </label>
+                                </div>
 
                                 <input type="text" id="task-answer" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-bold" placeholder="Correct Answer (for reference)">
                                 <button onclick="app.nextWizardStep(2)" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Next</button>
@@ -491,10 +500,7 @@
                     </div>
                 </div>
                 <div id="teacher-tasks-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6"></div>
-
-                <div id="load-more-container" class="w-full flex justify-center py-6 hidden">
-    <!-- Load More Button removed since logic changed to fetch all -->
-</div>
+                <div id="load-more-container" class="w-full flex justify-center py-6 hidden"></div>
             </section>
 
           <section id="tab-rating" class="hidden">
@@ -524,14 +530,13 @@
                     <i data-lucide="activity" class="w-5 h-5 text-indigo-500"></i> Live Activity
                 </h3>
                 <div id="teacher-activity-list" class="flex-grow overflow-y-auto pr-2 space-y-4 custom-scrollbar">
-                    <!-- Activity Items will be injected here -->
                     <div class="text-center text-slate-400 text-sm py-10">Loading activity...</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="quick-stats" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8"></div>
+    <div id="quick-stats" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6"></div>
 
     <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-10 shadow-sm border border-slate-100 mb-8">
         <h3 class="font-bold text-slate-800 text-lg mb-6">Class Progress</h3>
@@ -625,12 +630,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, Timestamp, query, where, increment, orderBy, 
-    limit, 
-    startAfter } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, getDoc, setDoc, Timestamp, query, where, increment, orderBy, limit, startAfter } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = JSON.parse('{"apiKey":"AIzaSyA_mptcpENpEsrJYHXBRxb-rlRH_eqI8-E","authDomain":"studento-aa5d2.firebaseapp.com","projectId":"studento-aa5d2","storageBucket":"studento-aa5d2.firebasestorage.app","messagingSenderId":"1078257307837","appId":"1:1078257307837:web:9ea84484c1dfdb129ca7d4"}');
-        // Fallback for appId to avoid undefined paths which cause 400 bad request errors
         const appId = (typeof __app_id !== 'undefined' && __app_id) ? __app_id : 'school-edu-v4';
         
         const appFb = initializeApp(firebaseConfig);
@@ -638,105 +640,63 @@
         const db = getFirestore(appFb);
 
         let currentStudentId = null;
-        let currentStudentData = null; // Stores info about student (and teacher)
+        let currentStudentData = null;
         let groupedTasks = []; 
         let drafts = [];
         let editingDraftId = null;
-        let editingGroupId = null; // Tracks if we are editing a published group
+        let editingGroupId = null;
         let statsChart = null;
         let currentEditingTaskId = null;
-        let currentReactionTargetId = null; // Stores ID of the student we are sending reaction to
+        let currentReactionTargetId = null;
         let currentDraftImages = []; // Stores images for the task currently being created
-        let allLoadedTasks = []; // Global tasks storage for render
+        let allLoadedTasks = [];
+        
+        // Cache to prevent re-fetching images
+        window.appImageCache = {};
 
         // === GLOBAL STRING COMPARISON FUNCTIONS (Levenshtein Algorithm) ===
         function levenshtein(a, b) {
             if (a.length === 0) return b.length;
             if (b.length === 0) return a.length;
-
             const matrix = [];
-
-            // Initialize first column
-            for (let i = 0; i <= b.length; i++) {
-                matrix[i] = [i];
-            }
-
-            // Initialize first row
-            for (let j = 0; j <= a.length; j++) {
-                matrix[0][j] = j;
-            }
-
-            // Fill matrix
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
             for (let i = 1; i <= b.length; i++) {
                 for (let j = 1; j <= a.length; j++) {
                     if (b.charAt(i - 1) === a.charAt(j - 1)) {
                         matrix[i][j] = matrix[i - 1][j - 1];
                     } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1, // substitution
-                            Math.min(
-                                matrix[i][j - 1] + 1, // insertion
-                                matrix[i - 1][j] + 1 // deletion
-                            )
-                        );
+                        matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
                     }
                 }
             }
-
             return matrix[b.length][a.length];
         }
 
-        // === GENERATE HTML DIFF FOR ERRORS ===
         function getDiffHTML(student, correct) {
             const s = student.trim();
             const c = correct.trim();
-            
-            // Matrix dimensions
             const n = s.length;
             const m = c.length;
-            
-            // Create matrix
             const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(0));
-
-            // Initialize boundaries
             for (let i = 0; i <= n; i++) dp[i][0] = i;
             for (let j = 0; j <= m; j++) dp[0][j] = j;
-
-            // Fill matrix (case-insensitive for alignment)
             for (let i = 1; i <= n; i++) {
                 for (let j = 1; j <= m; j++) {
-                    if (s[i - 1].toLowerCase() === c[j - 1].toLowerCase()) { 
-                        dp[i][j] = dp[i - 1][j - 1];
-                    } else {
-                        dp[i][j] = Math.min(
-                            dp[i - 1][j] + 1,        // Deletion
-                            dp[i][j - 1] + 1,        // Insertion
-                            dp[i - 1][j - 1] + 1  // Substitution
-                        );
-                    }
+                    if (s[i - 1].toLowerCase() === c[j - 1].toLowerCase()) dp[i][j] = dp[i - 1][j - 1];
+                    else dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + 1);
                 }
             }
-
-            // Backtrack to generate HTML
-            let i = n, j = m;
-            let html = '';
-
+            let i = n, j = m, html = '';
             while (i > 0 || j > 0) {
                 if (i > 0 && j > 0 && s[i - 1].toLowerCase() === c[j - 1].toLowerCase()) {
-                    html = s[i - 1] + html; // Match - just the character
-                    i--; j--;
+                    html = s[i - 1] + html; i--; j--;
                 } else if (j > 0 && (i === 0 || dp[i][j] === dp[i][j - 1] + 1)) {
-                    // Insertion (needed in correct, missing in student) -> Green
-                    html = `<span class="bg-emerald-200 text-emerald-700 px-0.5 rounded mx-0.5">${c[j - 1]}</span>` + html;
-                    j--;
+                    html = `<span class="bg-emerald-200 text-emerald-700 px-0.5 rounded mx-0.5">${c[j - 1]}</span>` + html; j--;
                 } else if (i > 0 && (j === 0 || dp[i][j] === dp[i - 1][j] + 1)) {
-                    // Deletion (present in student, extra) -> Red strikethrough
-                        html = `<span class="bg-rose-200 text-rose-600 line-through px-0.5 rounded mx-0.5 opacity-80 decoration-2 decoration-rose-500">${s[i - 1]}</span>` + html;
-                    i--;
+                    html = `<span class="bg-rose-200 text-rose-600 line-through px-0.5 rounded mx-0.5 opacity-80 decoration-2 decoration-rose-500">${s[i - 1]}</span>` + html; i--;
                 } else {
-                      // Substitution -> Show red what was, green what should be
-                    html = `<span class="bg-emerald-200 text-emerald-700 px-0.5 rounded mx-0.5">${c[j - 1]}</span><span class="bg-rose-200 text-rose-600 line-through px-0.5 rounded mx-0.5 opacity-80 decoration-2 decoration-rose-500">${s[i - 1]}</span>` + html;
-                    i--; j--;
+                    html = `<span class="bg-emerald-200 text-emerald-700 px-0.5 rounded mx-0.5">${c[j - 1]}</span><span class="bg-rose-200 text-rose-600 line-through px-0.5 rounded mx-0.5 opacity-80 decoration-2 decoration-rose-500">${s[i - 1]}</span>` + html; i--; j--;
                 }
             }
             return html;
@@ -745,18 +705,12 @@
         function calculateSimilarity(s1, s2) {
             const a = s1.trim().toLowerCase();
             const b = s2.trim().toLowerCase();
-            
-            // If strings are identical
             if (a === b) return 100;
-
             const maxLength = Math.max(a.length, b.length);
-            if (maxLength === 0) return 100; // Both empty
-
+            if (maxLength === 0) return 100;
             const distance = levenshtein(a, b);
-            const similarity = (1 - distance / maxLength) * 100;
-            return Math.floor(similarity);
+            return Math.floor((1 - distance / maxLength) * 100);
         }
-        // =================================================================
 
         const formatDate = (inputDate) => {
             if (!inputDate) return "";
@@ -768,13 +722,10 @@
             const now = Date.now();
             const diff = now - timestamp;
             const minutes = Math.floor(diff / 60000);
-            
             if (minutes < 1) return 'Just now';
             if (minutes < 60) return `${minutes}m ago`;
-            
             const hours = Math.floor(minutes / 60);
             if (hours < 24) return `${hours}h ago`;
-            
             return new Date(timestamp).toLocaleDateString();
         };
 
@@ -797,23 +748,13 @@
                 document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
                 document.getElementById('screen-main').classList.add('hidden');
                 document.getElementById(id).classList.remove('hidden');
-                
-                // === DYNAMIC BACKGROUND FOR OVERSCROLL ===
-                // If on dashboard, paint "background" gray
                 if (id === 'screen-teacher-dash' || id === 'screen-student-dash') {
                     document.documentElement.style.backgroundColor = '#F8FAFC';
                     document.body.style.backgroundColor = '#F8FAFC';
-                    // Change status bar color in browser (for Android Chrome etc.)
-                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                    if (metaThemeColor) metaThemeColor.setAttribute('content', '#F8FAFC');
                 } else {
-                    // If on login/main, paint white
                     document.documentElement.style.backgroundColor = '#ffffff';
                     document.body.style.backgroundColor = '#ffffff';
-                    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                    if (metaThemeColor) metaThemeColor.setAttribute('content', '#ffffff');
                 }
-                
                 lucide.createIcons();
             },
 
@@ -846,167 +787,111 @@
             },
 
             submitTeacherAuth: () => {
-                if (window.app.teacherAuthMode === 'login') {
-                    app.teacherLogin();
-                } else {
-                    app.teacherRegister();
-                }
+                if (window.app.teacherAuthMode === 'login') app.teacherLogin();
+                else app.teacherRegister();
             },
 
             teacherAuthMode: 'login',
 
-// 1. Новая функция для расчета цвета и ширины
-checkPasswordStrength: (val) => {
-    const bar = document.getElementById('password-strength-bar');
-    const len = val.length;
-    
-    // Максимум 6 символов для полной полоски
-    // (Math.min гарантирует, что мы не превысим 100%)
-    const percentage = Math.min(100, (len / 6) * 100);
-    
-    bar.style.width = percentage + '%';
+            checkPasswordStrength: (val) => {
+                const bar = document.getElementById('password-strength-bar');
+                const len = val.length;
+                const percentage = Math.min(100, (len / 6) * 100);
+                bar.style.width = percentage + '%';
+                bar.classList.remove('bg-rose-500', 'bg-amber-400', 'bg-emerald-500');
+                if (len === 0 || len < 4) bar.classList.add('bg-rose-500');
+                else if (len < 6) bar.classList.add('bg-amber-400');
+                else bar.classList.add('bg-emerald-500');
+            },
 
-    // Логика цветов:
-    // Удаляем старые классы цветов
-    bar.classList.remove('bg-rose-500', 'bg-amber-400', 'bg-emerald-500');
+            setTeacherAuthMode: (mode) => {
+                window.app.teacherAuthMode = mode;
+                const slider = document.getElementById('auth-slider-bg');
+                const btnLogin = document.getElementById('btn-auth-login');
+                const btnRegister = document.getElementById('btn-auth-register');
+                const actionBtn = document.getElementById('btn-auth-action');
+                const strengthContainer = document.getElementById('password-strength-container');
+                const passwordInput = document.getElementById('t-password');
 
-    if (len === 0) {
-        bar.classList.add('bg-rose-500'); // Пусто - красный
-    } else if (len < 4) {
-        bar.classList.add('bg-rose-500'); // Мало - красный
-    } else if (len < 6) {
-        bar.classList.add('bg-amber-400'); // Почти - желтый/оранжевый
-    } else {
-        bar.classList.add('bg-emerald-500'); // Готово - зеленый
-    }
-},
-
-// 2. Обновленная функция переключения (добавлена логика strengthContainer)
-setTeacherAuthMode: (mode) => {
-    window.app.teacherAuthMode = mode;
-    
-    const slider = document.getElementById('auth-slider-bg');
-    const btnLogin = document.getElementById('btn-auth-login');
-    const btnRegister = document.getElementById('btn-auth-register');
-    const actionBtn = document.getElementById('btn-auth-action');
-    const strengthContainer = document.getElementById('password-strength-container');
-    const passwordInput = document.getElementById('t-password');
-
-    if (mode === 'login') {
-        // Режим Входа
-        slider.style.transform = 'translateX(0)';
-        btnLogin.classList.replace('text-slate-400', 'text-indigo-600');
-        btnRegister.classList.replace('text-indigo-600', 'text-slate-400');
-        actionBtn.textContent = 'Log In';
-        
-        // Скрываем полоску
-        strengthContainer.classList.add('hidden');
-    } else {
-        // Режим Регистрации
-        slider.style.transform = 'translateX(100%)'; 
-        btnLogin.classList.replace('text-indigo-600', 'text-slate-400');
-        btnRegister.classList.replace('text-slate-400', 'text-indigo-600');
-        actionBtn.textContent = 'Create Account';
-        
-        // Показываем полоску
-        strengthContainer.classList.remove('hidden');
-        // Сразу проверяем текущее значение (если пользователь уже что-то ввел)
-        app.checkPasswordStrength(passwordInput.value);
-    }
-},
+                if (mode === 'login') {
+                    slider.style.transform = 'translateX(0)';
+                    btnLogin.classList.replace('text-slate-400', 'text-indigo-600');
+                    btnRegister.classList.replace('text-indigo-600', 'text-slate-400');
+                    actionBtn.textContent = 'Log In';
+                    strengthContainer.classList.add('hidden');
+                } else {
+                    slider.style.transform = 'translateX(100%)'; 
+                    btnLogin.classList.replace('text-indigo-600', 'text-slate-400');
+                    btnRegister.classList.replace('text-slate-400', 'text-indigo-600');
+                    actionBtn.textContent = 'Create Account';
+                    strengthContainer.classList.remove('hidden');
+                    app.checkPasswordStrength(passwordInput.value);
+                }
+            },
 
             setTeacherTab: (tab) => {
-    // Если вкладка уже открыта — ничего не делаем
-    if (activeTeacherTab === tab && !document.getElementById(`tab-${tab}`).classList.contains('hidden')) {
-        return; 
-    }
-
-    // Убрали 'stats' из массива tabs
-    const tabs = ['students', 'tasks', 'rating'];
-    
-    // Обновили заголовки (stats больше не нужен)
-    const titles = { students: 'Class', tasks: 'Tasks', rating: 'Leaderboard' };
-    
-    const mobileTitle = document.getElementById('mobile-header-title');
-    if (mobileTitle) mobileTitle.textContent = titles[tab];
-
-    tabs.forEach(t => {
-        const el = document.getElementById(`tab-${t}`);
-        const btn = document.getElementById(`tab-btn-${t}`);
-        const isVisible = t === tab;
-        
-        if (isVisible) {
-            el.classList.remove('hidden');
-            el.classList.remove('animate-slide-up');
-            void el.offsetWidth; 
-            el.classList.add('animate-slide-up');
-            
-            btn.classList.add('active-tab', 'text-white');
-            btn.classList.remove('text-slate-400', 'hover:bg-slate-50');
-        } else {
-            el.classList.add('hidden');
-            
-            btn.classList.remove('active-tab', 'text-white');
-            btn.classList.add('text-slate-400', 'hover:bg-slate-50');
-        }
-        
-        const mobBtn = document.getElementById(`mob-tab-${t}`);
-        if(mobBtn) mobBtn.classList.toggle('mobile-active-tab', isVisible);
-    });
-    
-    activeTeacherTab = tab;
-
-    if(tab === 'students') loadMyStudents();
-    if(tab === 'tasks') loadTeacherTasks();
-    
-    // ИЗМЕНЕНИЕ: Загружаем И статистику, И рейтинг, когда открываем эту вкладку
-    if(tab === 'rating') {
-        loadStatistics();       // График
-        loadTeacherLeaderboard(); // Список учеников
-    }
-    
-    lucide.createIcons();
-},
-
-            setStudentTab: (tab) => {
-                if (activeStudentTab === tab && !document.getElementById(`tab-student-${tab}`).classList.contains('hidden')) {
-                      return;
-                }
-                
-                const tabs = ['lessons', 'quests', 'rating'];
-                const titles = { lessons: 'My Lessons', quests: 'Quests', rating: 'Leaderboard' };
-
-                const mobileTitle = document.getElementById('mobile-student-title');
+                if (activeTeacherTab === tab && !document.getElementById(`tab-${tab}`).classList.contains('hidden')) return;
+                const tabs = ['students', 'tasks', 'rating'];
+                const titles = { students: 'Class', tasks: 'Tasks', rating: 'Leaderboard' };
+                const mobileTitle = document.getElementById('mobile-header-title');
                 if (mobileTitle) mobileTitle.textContent = titles[tab];
 
+                tabs.forEach(t => {
+                    const el = document.getElementById(`tab-${t}`);
+                    const btn = document.getElementById(`tab-btn-${t}`);
+                    const isVisible = t === tab;
+                    if (isVisible) {
+                        el.classList.remove('hidden');
+                        el.classList.remove('animate-slide-up');
+                        void el.offsetWidth; 
+                        el.classList.add('animate-slide-up');
+                        btn.classList.add('active-tab', 'text-white');
+                        btn.classList.remove('text-slate-400', 'hover:bg-slate-50');
+                    } else {
+                        el.classList.add('hidden');
+                        btn.classList.remove('active-tab', 'text-white');
+                        btn.classList.add('text-slate-400', 'hover:bg-slate-50');
+                    }
+                    const mobBtn = document.getElementById(`mob-tab-${t}`);
+                    if(mobBtn) mobBtn.classList.toggle('mobile-active-tab', isVisible);
+                });
+                activeTeacherTab = tab;
+                if(tab === 'students') loadMyStudents();
+                if(tab === 'tasks') loadTeacherTasks();
+                if(tab === 'rating') {
+                    loadStatistics();
+                    loadTeacherLeaderboard();
+                }
+                lucide.createIcons();
+            },
+
+            setStudentTab: (tab) => {
+                if (activeStudentTab === tab && !document.getElementById(`tab-student-${tab}`).classList.contains('hidden')) return;
+                const tabs = ['lessons', 'quests', 'rating'];
+                const titles = { lessons: 'My Lessons', quests: 'Quests', rating: 'Leaderboard' };
+                const mobileTitle = document.getElementById('mobile-student-title');
+                if (mobileTitle) mobileTitle.textContent = titles[tab];
                 tabs.forEach(t => {
                     const el = document.getElementById(`tab-student-${t}`);
                     const btn = document.getElementById(`st-tab-btn-${t}`);
                     const isVisible = t === tab;
-                    
                     if (isVisible) {
                           el.classList.remove('hidden');
                           el.classList.remove('animate-slide-up');
                           void el.offsetWidth;
                           el.classList.add('animate-slide-up');
-
-                          // ИЗМЕНЕНИЕ: Явно добавляем белый цвет
                           btn.classList.add('student-active-tab', 'text-white');
                           btn.classList.remove('text-slate-400', 'hover:bg-blue-50', 'hover:text-blue-600');
                     } else {
                         el.classList.add('hidden');
-
-                        // ИЗМЕНЕНИЕ: Возвращаем стили по умолчанию
                         btn.classList.remove('student-active-tab', 'text-white');
                         btn.classList.add('text-slate-400', 'hover:bg-blue-50', 'hover:text-blue-600');
                     }
-
                     const mobBtn = document.getElementById(`st-mob-tab-${t}`);
                     mobBtn.classList.toggle('student-mobile-active-tab', isVisible);
                     if(!isVisible) mobBtn.classList.add('text-slate-400');
                     else mobBtn.classList.remove('text-slate-400');
                 });
-
                 activeStudentTab = tab;
                 if (tab === 'lessons') loadStudentTasks();
                 if (tab === 'quests') loadStudentQuests();
@@ -1019,20 +904,16 @@ setTeacherAuthMode: (mode) => {
             updateAnswerTypeUI: () => {
                 const type = document.querySelector('input[name="answerType"]:checked').value;
                 const input = document.getElementById('task-answer');
-                if (type === 'manual') {
-                    input.classList.add('hidden');
-                } else {
-                    input.classList.remove('hidden');
-                }
+                if (type === 'manual') input.classList.add('hidden');
+                else input.classList.remove('hidden');
             },
 
             openNewTaskForm: (id = null, type = 'draft') => {
                 document.getElementById('task-creation-wizard').classList.remove('hidden');
                 editingDraftId = null;
                 editingGroupId = null;
-                currentDraftImages = []; // Reset images
+                currentDraftImages = []; 
 
-                // Reset inputs
                 document.getElementById('task-text').value = '';
                 document.getElementById('task-answer').value = '';
                 document.getElementById('task-deadline').value = '';
@@ -1040,16 +921,14 @@ setTeacherAuthMode: (mode) => {
                 document.getElementById('new-image-url').value = '';
                 app.renderImagePreviews();
 
-                document.querySelector('input[name="answerType"][value="mixed"]').checked = true; // Default
+                document.querySelector('input[name="answerType"][value="mixed"]').checked = true;
                 document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = false);
 
-                // Set Title based on action
                 const titleEl = document.getElementById('wizard-title');
                 
                 if (id && type === 'draft') {
                     editingDraftId = id;
                     titleEl.textContent = "Edit Draft";
-                    
                     const draft = drafts.find(d => d.id === id);
                     if (draft) {
                         document.getElementById('task-text').value = draft.question || '';
@@ -1057,35 +936,37 @@ setTeacherAuthMode: (mode) => {
                         if (draft.deadline) document.getElementById('task-deadline').value = draft.deadline; 
                         if (draft.publishAt) document.getElementById('task-publish-date').value = draft.publishAt;
                         
-                        if (draft.imageUrls && Array.isArray(draft.imageUrls)) {
-                            currentDraftImages = draft.imageUrls;
-                        } else if (draft.imageUrl) {
-                            currentDraftImages = [draft.imageUrl];
+                        // Handle legacy and new images
+                        if (draft.imageUrls) currentDraftImages = draft.imageUrls; 
+                        else if (draft.imageUrl) currentDraftImages = [draft.imageUrl];
+                        
+                        // If it has new ID-based images, we need to fetch them to show preview!
+                        // This part is tricky for drafts. Let's assume drafts store base64 for editing convenience, 
+                        // or we fetch. For simplicity, we'll keep base64 in drafts for now or handle IDs.
+                        if (draft.linkedImageIds) {
+                           // Fetch and display
+                           Promise.all(draft.linkedImageIds.map(imgId => app.fetchImageById(imgId))).then(imgs => {
+                               currentDraftImages = imgs.filter(i => i);
+                               app.renderImagePreviews();
+                           });
+                        } else {
+                            app.renderImagePreviews();
                         }
-                        app.renderImagePreviews();
 
-                        if (draft.answerType) {
-                            const rb = document.querySelector(`input[name="answerType"][value="${draft.answerType}"]`);
-                            if (rb) rb.checked = true;
-                        }
-
-                        if (draft.studentIds && Array.isArray(draft.studentIds)) {
-                            draft.studentIds.forEach(sid => {
-                                const cb = document.querySelector(`.student-checkbox[value="${sid}"]`);
-                                if (cb) cb.checked = true;
-                            });
-                        }
+                        if (draft.answerType) document.querySelector(`input[name="answerType"][value="${draft.answerType}"]`).checked = true;
+                        if (draft.studentIds) draft.studentIds.forEach(sid => {
+                             const cb = document.querySelector(`.student-checkbox[value="${sid}"]`);
+                             if (cb) cb.checked = true;
+                        });
                     }
                 } else if (id && type === 'published') {
                     editingGroupId = id;
                     titleEl.textContent = "Edit Task";
-                    
                     const group = groupedTasks.find(g => g.groupId === id);
                     if (group) {
                           document.getElementById('task-text').value = group.question || '';
                           document.getElementById('task-answer').value = group.correctAnswer || '';
                           
-                          // Date to string format for input
                           if(group.deadline) {
                              const d = group.deadline.toDate();
                              d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -1097,31 +978,30 @@ setTeacherAuthMode: (mode) => {
                              document.getElementById('task-publish-date').value = d.toISOString().slice(0,16);
                           }
 
-                          // Images
-                          if (group.imageUrls && Array.isArray(group.imageUrls)) {
-                            currentDraftImages = group.imageUrls;
-                        } else if (group.imageUrl) {
-                            currentDraftImages = [group.imageUrl];
-                        }
-                        app.renderImagePreviews();
+                          // Handle images
+                          if (group.linkedImageIds && group.linkedImageIds.length > 0) {
+                               Promise.all(group.linkedImageIds.map(imgId => app.fetchImageById(imgId))).then(imgs => {
+                                   currentDraftImages = imgs.filter(i => i);
+                                   app.renderImagePreviews();
+                               });
+                          } else if (group.imageUrls) {
+                              currentDraftImages = group.imageUrls;
+                              app.renderImagePreviews();
+                          } else if (group.imageUrl) {
+                              currentDraftImages = [group.imageUrl];
+                              app.renderImagePreviews();
+                          }
 
-                        // Answer Type
-                        if (group.answerType) {
-                            const rb = document.querySelector(`input[name="answerType"][value="${group.answerType}"]`);
-                            if (rb) rb.checked = true;
-                        }
-
-                        // Students Checkboxes
-                        const assignedIds = group.items.map(i => i.studentId);
-                        assignedIds.forEach(sid => {
-                            const cb = document.querySelector(`.student-checkbox[value="${sid}"]`);
-                            if (cb) cb.checked = true;
-                        });
+                          if (group.answerType) document.querySelector(`input[name="answerType"][value="${group.answerType}"]`).checked = true;
+                          const assignedIds = group.items.map(i => i.studentId);
+                          assignedIds.forEach(sid => {
+                              const cb = document.querySelector(`.student-checkbox[value="${sid}"]`);
+                              if (cb) cb.checked = true;
+                          });
                     }
                 } else {
                       titleEl.textContent = "Task Builder";
                 }
-                
                 app.updateAnswerTypeUI();
                 app.nextWizardStep(1);
             },
@@ -1131,12 +1011,7 @@ setTeacherAuthMode: (mode) => {
                 const urlInput = document.getElementById('new-image-url');
                 const url = urlInput.value.trim();
                 if (!url) return;
-                
-                if (currentDraftImages.length >= 3) {
-                    notify("Max 3 images allowed", "error");
-                    return;
-                }
-                
+                if (currentDraftImages.length >= 3) return notify("Max 3 images allowed", "error");
                 currentDraftImages.push(url);
                 urlInput.value = '';
                 app.renderImagePreviews();
@@ -1145,20 +1020,17 @@ setTeacherAuthMode: (mode) => {
             handleImageUpload: (input) => {
                 const file = input.files[0];
                 if (!file) return;
-
                 if (currentDraftImages.length >= 3) {
                     notify("Max 3 images allowed", "error");
                     input.value = '';
                     return;
                 }
-
                 if (file.size > 20 * 1024 * 1024) {
                     notify("File too huge (>20MB)", "error");
                     input.value = '';
                     return;
                 }
-
-                notify("Processing image...", "info"); // User feedback
+                notify("Compressing...", "info");
 
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -1168,41 +1040,35 @@ setTeacherAuthMode: (mode) => {
                         let width = img.width;
                         let height = img.height;
                         
-                        let MAX_DIM = 1000; 
-                        let quality = 0.7;
+                        // AGGRESSIVE COMPRESSION SETTINGS
+                        let MAX_DIM = 800; // Smaller max dimension
+                        let quality = 0.6; // Lower quality for speed
 
                         const compress = () => {
                             let currW = width;
                             let currH = height;
-
                             if (currW > currH) {
                                 if (currW > MAX_DIM) { currH *= MAX_DIM / currW; currW = MAX_DIM; }
                             } else {
                                 if (currH > MAX_DIM) { currW *= MAX_DIM / currH; currH = MAX_DIM; }
                             }
-
                             canvas.width = currW;
                             canvas.height = currH;
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, currW, currH);
-
                             const dataUrl = canvas.toDataURL('image/jpeg', quality);
                             
-                            if (dataUrl.length > 900000) {
+                            // Ensure it's under 300KB
+                            if (dataUrl.length > 400000 && MAX_DIM > 400) {
                                 MAX_DIM = Math.floor(MAX_DIM * 0.8);
                                 quality = Math.max(0.5, quality - 0.1);
-                                if (MAX_DIM < 300) {
-                                    notify("Image too complex to compress safely.", "error");
-                                    return;
-                                }
                                 compress();
                             } else {
                                 currentDraftImages.push(dataUrl);
                                 app.renderImagePreviews();
-                                notify("Image attached!", "success");
+                                notify("Image added!", "success");
                             }
                         };
-                        
                         compress();
                     };
                     img.src = e.target.result;
@@ -1228,14 +1094,59 @@ setTeacherAuthMode: (mode) => {
                 `).join('');
                 lucide.createIcons();
             },
-            // --- IMAGE HANDLING END ---
+
+            // --- SEPARATE IMAGE STORAGE LOGIC ---
+            processImagesForSave: async (images) => {
+                const imageIds = [];
+                // Filter out large base64 strings and save them to 'images' collection
+                for (const img of images) {
+                    // Check if it's a base64 string (starts with data:image) and is long
+                    if (img.startsWith('data:image') && img.length > 200) {
+                         try {
+                             // Check if we already have this exact image in cache to reuse ID? No, safer to create new for now or hash.
+                             // Simple: Just create new doc.
+                             const docRef = await addDoc(getColPath('images'), { base64: img, createdAt: Date.now() });
+                             imageIds.push(docRef.id);
+                             // Pre-cache it so we don't need to fetch it immediately
+                             window.appImageCache[docRef.id] = img;
+                         } catch (e) {
+                             console.error("Image upload failed", e);
+                             notify("Failed to save an image", "error");
+                         }
+                    } else if (img.startsWith('http')) {
+                        // It's a URL, we can't really store it in imageIds easily unless we distinguish.
+                        // For mixed content, we might need a richer structure.
+                        // But for simplicity in this file-based app: treat external URLs as separate if needed, 
+                        // OR just fetch them, convert to base64 and save? 
+                        // Let's assume for now we only support the separate collection for uploaded content.
+                        // If it's a URL, we can't use 'imageIds' logic directly unless we store {type: 'url', val: ...}
+                        // Fallback: If user used URL, we might still have to use legacy imageUrls OR save a doc with type: 'url'
+                        const docRef = await addDoc(getColPath('images'), { url: img, createdAt: Date.now() });
+                        imageIds.push(docRef.id);
+                        window.appImageCache[docRef.id] = img;
+                    }
+                }
+                return imageIds;
+            },
+
+            fetchImageById: async (id) => {
+                if (window.appImageCache[id]) return window.appImageCache[id];
+                try {
+                    const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'images', id));
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        const result = data.base64 || data.url;
+                        window.appImageCache[id] = result;
+                        return result;
+                    }
+                } catch (e) { console.error(e); }
+                return null;
+            },
 
             closeNewTaskForm: async () => {
                 const question = document.getElementById('task-text').value.trim();
                 const container = document.getElementById('task-creation-wizard');
                 
-                // If editing a published task, we don't save as draft on close without publish.
-                // We just close.
                 if (editingGroupId) {
                     editingGroupId = null;
                     container.classList.add('hidden');
@@ -1249,6 +1160,9 @@ setTeacherAuthMode: (mode) => {
                     const answerType = document.querySelector('input[name="answerType"]:checked').value;
                     const checked = Array.from(document.querySelectorAll('.student-checkbox:checked')).map(cb => cb.value);
 
+                    // Process images
+                    const linkedImageIds = await app.processImagesForSave(currentDraftImages);
+
                     const draftData = {
                         teacherId: auth.currentUser.uid,
                         question,
@@ -1256,23 +1170,18 @@ setTeacherAuthMode: (mode) => {
                         answerType,
                         deadline, 
                         publishAt,
-                        imageUrls: currentDraftImages, // Save all images
-                        imageUrl: currentDraftImages[0] || "", // For backward compatibility
+                        linkedImageIds: linkedImageIds, // NEW: Store IDs
+                        // Legacy support: empty array to avoid confusion
+                        imageUrls: [], 
                         studentIds: checked,
                         updatedAt: Date.now()
                     };
 
                     try {
-                        if (editingDraftId) {
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'drafts', editingDraftId), draftData);
-                        } else {
-                            await addDoc(getColPath('drafts'), draftData);
-                        }
+                        if (editingDraftId) await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'drafts', editingDraftId), draftData);
+                        else await addDoc(getColPath('drafts'), draftData);
                         notify("Saved as draft", "info");
-                    } catch (e) {
-                        console.error(e);
-                        notify("Error saving draft", "error");
-                    }
+                    } catch (e) { console.error(e); notify("Error saving draft", "error"); }
                 }
 
                 editingDraftId = null;
@@ -1315,7 +1224,7 @@ setTeacherAuthMode: (mode) => {
                         teacherId: auth.currentUser.uid, 
                         name, 
                         phrase, 
-                        bonusPoints: 0, // Initialize bonusPoints
+                        bonusPoints: 0, 
                         createdAt: Date.now() 
                     });
                     document.getElementById('new-name').value = ''; document.getElementById('new-phrase').value = '';
@@ -1345,8 +1254,12 @@ setTeacherAuthMode: (mode) => {
                 const publishAt = publishVal ? Timestamp.fromDate(new Date(publishVal)) : Timestamp.now();
                 const deadline = Timestamp.fromDate(new Date(deadlineVal));
 
+                notify("Publishing...", "info");
+
                 try {
-                    // Logic for UPDATING existing task group
+                    // PROCESS IMAGES FIRST
+                    const linkedImageIds = await app.processImagesForSave(currentDraftImages);
+
                     if (editingGroupId) {
                         const commonData = {
                             question: text,
@@ -1354,19 +1267,18 @@ setTeacherAuthMode: (mode) => {
                             answerType: answerType,
                             deadline: deadline,
                             publishAt: publishAt,
-                            imageUrls: currentDraftImages,
-                            imageUrl: currentDraftImages[0] || ""
+                            linkedImageIds: linkedImageIds, // Use IDs
+                            imageUrls: [], // Clear legacy to force speed
+                            imageUrl: "" 
                         };
 
                         const selectedStudentIds = Array.from(checked).map(cb => cb.value);
                         const group = groupedTasks.find(g => g.groupId === editingGroupId);
                         const existingStudentIds = group.items.map(i => i.studentId);
                         
-                        // 1. Update existing tasks
                         const toUpdate = group.items.filter(i => selectedStudentIds.includes(i.studentId));
                         const updatePromises = toUpdate.map(task => updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', task.id), commonData));
                         
-                        // 2. Create new tasks for newly added students
                         const toAddIds = selectedStudentIds.filter(sid => !existingStudentIds.includes(sid));
                         const addPromises = toAddIds.map(sid => {
                              const name = document.querySelector(`.student-checkbox[value="${sid}"]`).dataset.name;
@@ -1382,7 +1294,6 @@ setTeacherAuthMode: (mode) => {
                              });
                         });
                         
-                        // 3. Delete tasks for removed students
                         const toDelete = group.items.filter(i => !selectedStudentIds.includes(i.studentId));
                         const deletePromises = toDelete.map(task => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', task.id)));
                         
@@ -1391,14 +1302,14 @@ setTeacherAuthMode: (mode) => {
                         editingGroupId = null;
 
                     } else {
-                        // Logic for creating NEW task group
                         const groupId = Date.now().toString();
                         const promises = Array.from(checked).map(cb => {
                             return addDoc(getColPath('tasks'), {
                                 groupId, teacherId: auth.currentUser.uid, studentId: cb.value, studentName: cb.dataset.name,
                                 question: text, correctAnswer: answer, answerType: answerType, 
-                                imageUrls: currentDraftImages, // Save all images
-                                imageUrl: currentDraftImages[0] || "", // For backward compat
+                                linkedImageIds: linkedImageIds, // Use IDs
+                                imageUrls: [],
+                                imageUrl: "", 
                                 deadline: deadline,
                                 publishAt: publishAt,
                                 status: 'assigned', score: 0, createdAt: Date.now()
@@ -1422,6 +1333,8 @@ setTeacherAuthMode: (mode) => {
             deleteTaskGroup: async (groupId) => {
                 if(await app.askConfirm("Delete for everyone?")) {
                     const group = groupedTasks.find(g => g.groupId === groupId);
+                    // Also delete images if possible? It's harder without simple reference counting. 
+                    // For now, leave orphaned images or implement later.
                     await Promise.all(group.items.map(item => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', item.id))));
                     loadTeacherTasks();
                 }
@@ -1434,7 +1347,6 @@ setTeacherAuthMode: (mode) => {
                 }
             },
 
-            // === SCORE EDIT LOGIC ===
             editScore: (taskId, currentScore) => {
                 currentEditingTaskId = taskId;
                 document.getElementById('edit-score-input').value = currentScore;
@@ -1451,35 +1363,26 @@ setTeacherAuthMode: (mode) => {
                 if (isNaN(newScore)) return notify("Enter a number", "error");
 
                 try {
-                    // Update task status to completed as well (in case it was 'review')
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', currentEditingTaskId), {
                         score: newScore,
                         status: 'completed'
                     });
                     notify("Score updated", "success");
                     app.closeEditScoreModal();
-                    
-                    await loadTeacherTasks(); // Reload underlying list
-                } catch (e) {
-                    console.error(e);
-                    notify("Update error", "error");
-                }
+                    await loadTeacherTasks(); 
+                } catch (e) { console.error(e); notify("Update error", "error"); }
             },
             
-            // New toggle functions
             toggleTaskAccordion: (groupId) => {
                 const body = document.getElementById(`task-body-${groupId}`);
                 const chevron = document.getElementById(`chevron-${groupId}`);
                 const card = document.getElementById(`task-card-${groupId}`);
-
                 if (body.style.maxHeight) {
-                    // Collapse
                     body.style.maxHeight = null;
                     chevron.style.transform = 'rotate(0deg)';
                     card.classList.remove('shadow-xl'); 
                     card.classList.add('shadow-sm');
                 } else {
-                    // Expand
                     body.style.maxHeight = body.scrollHeight + "px";
                     chevron.style.transform = 'rotate(180deg)';
                     card.classList.remove('shadow-sm'); 
@@ -1487,42 +1390,29 @@ setTeacherAuthMode: (mode) => {
                 }
             },
 
-      toggleStudentTaskAccordion: (id) => {
+            toggleStudentTaskAccordion: (id) => {
                 const body = document.getElementById(`st-body-${id}`);
                 const chevron = document.getElementById(`st-chevron-${id}`);
-                // Мы больше не трогаем headerContent, он всегда виден
-                
                 if (body.style.maxHeight && body.style.maxHeight !== '0px') {
-                    // Закрыть
                     body.style.maxHeight = '0px';
                     chevron.style.transform = 'rotate(0deg)';
                 } else {
-                    // Открыть
                     body.style.maxHeight = (body.scrollHeight + 100) + "px";
                     chevron.style.transform = 'rotate(180deg)';
                 }
             },
             
-            // === REACTION LOGIC ===
             openEmojiModal: (targetId, hasReaction) => {
                 currentReactionTargetId = targetId;
                 const btnDelete = document.getElementById('btn-delete-reaction');
                 const hint = document.getElementById('reaction-hint');
-                
-                // Check if teacher
                 const isTeacher = !currentStudentId && auth.currentUser;
                 
-                if (isTeacher) {
-                    hint.textContent = "Teacher reward (1 per student)";
-                } else {
-                    hint.textContent = "Max 2 for the whole class";
-                }
+                if (isTeacher) hint.textContent = "Teacher reward (1 per student)";
+                else hint.textContent = "Max 2 for the whole class";
                 
-                if (hasReaction) {
-                        btnDelete.classList.remove('hidden');
-                } else {
-                        btnDelete.classList.add('hidden');
-                }
+                if (hasReaction) btnDelete.classList.remove('hidden');
+                else btnDelete.classList.add('hidden');
                 document.getElementById('modal-emoji').classList.remove('hidden');
             },
             
@@ -1532,67 +1422,46 @@ setTeacherAuthMode: (mode) => {
             },
             
             sendReaction: async (emoji) => {
-                // Determine sender (student or teacher)
                 let senderId = currentStudentId;
                 let isTeacher = false;
-                
                 if (!senderId && auth.currentUser) {
                     senderId = auth.currentUser.uid;
                     isTeacher = true;
                 }
                 
                 if (!senderId || !currentReactionTargetId) return;
-                
                 const reactionId = `${senderId}_${currentReactionTargetId}`;
                 
                 try {
-                    // 1. Check limits
                     const snap = await getDocs(getColPath('reactions'));
-                    const myReactions = snap.docs
-                        .map(d => d.data())
-                        .filter(r => r.fromStudentId === senderId);
-                        
-                    // Look for existing reaction to this target
+                    const myReactions = snap.docs.map(d => d.data()).filter(r => r.fromStudentId === senderId);
                     const existingToTarget = myReactions.find(r => r.toStudentId === currentReactionTargetId);
                     
                     if (!isTeacher) {
-                        // For students: limit 2 total
                           if (!existingToTarget && myReactions.length >= 2) {
                             notify("Max 2 reactions allowed!", "error");
                             app.closeEmojiModal();
                             return;
                         }
                     } 
-                    // Teachers limit not checked globally, only replacing old reaction for same student
 
-                    // 2. Save/Update reaction
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reactions', reactionId), {
                         fromStudentId: senderId,
                         toStudentId: currentReactionTargetId,
                         emoji: emoji,
                         timestamp: Date.now(),
-                        isTeacher: isTeacher // Teacher flag
+                        isTeacher: isTeacher
                     });
                     
-                    // === DAILY QUEST LOGIC (Student Only) ===
                     if (!isTeacher && currentStudentData) {
                         const today = new Date().toISOString().slice(0, 10);
                         const lastDate = currentStudentData.lastRewardDate;
-                        
                         if (lastDate !== today) {
-                            // Grant reward
                             const studentRef = doc(db, 'artifacts', appId, 'public', 'data', 'students', currentStudentId);
                             const newBonus = (currentStudentData.bonusPoints || 0) + 1;
-                            
-                            // Optimistic update
                             currentStudentData.bonusPoints = newBonus;
                             currentStudentData.lastRewardDate = today;
-                            
-                            await updateDoc(studentRef, {
-                                bonusPoints: newBonus,
-                                lastRewardDate: today
-                            });
-                            
+                            await updateDoc(studentRef, { bonusPoints: newBonus, lastRewardDate: today });
                             notify("Daily Quest Completed! +1 Point 💎", "success");
                         } else {
                              notify("Reaction sent!", "success");
@@ -1603,16 +1472,12 @@ setTeacherAuthMode: (mode) => {
                     
                     app.closeEmojiModal();
                     
-                    if (isTeacher) {
-                        loadTeacherLeaderboard();
-                    } else {
+                    if (isTeacher) loadTeacherLeaderboard();
+                    else {
                         if (activeStudentTab === 'quests') loadStudentQuests();
                         else loadStudentLeaderboard(); 
                     }
-                } catch (e) {
-                    console.error(e);
-                    notify("Send error", "error");
-                }
+                } catch (e) { console.error(e); notify("Send error", "error"); }
             },
             
             deleteReaction: async () => {
@@ -1622,26 +1487,19 @@ setTeacherAuthMode: (mode) => {
                     senderId = auth.currentUser.uid;
                     isTeacher = true;
                 }
-                
                 if (!senderId || !currentReactionTargetId) return;
                 const reactionId = `${senderId}_${currentReactionTargetId}`;
                 try {
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reactions', reactionId));
                     notify("Reaction removed", "success");
                     app.closeEmojiModal();
-                    
                     if (isTeacher) loadTeacherLeaderboard();
                     else loadStudentLeaderboard();
-                } catch(e) {
-                    notify("Delete error", "error");
-                }
+                } catch(e) { notify("Delete error", "error"); }
             },
 
-            // === SUPPORT QUEST LOGIC (UPDATED FOR RANDOM 1-TO-1) ===
             openSupportModal: async () => {
                 if (!currentStudentId || !currentStudentData) return;
-                
-                // Dropdown removed - no need to load classmates here anymore
                 document.getElementById('support-message-text').value = '';
                 document.getElementById('modal-support-quest').classList.remove('hidden');
                 lucide.createIcons();
@@ -1656,33 +1514,22 @@ setTeacherAuthMode: (mode) => {
                 if (text.length < 5) return notify("Message too short", "error");
 
                 try {
-                    // 1. Get ALL Classmates
                     const studentsSnap = await getDocs(getColPath('students'));
-                    const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()}))
-                        .filter(s => s.teacherId === currentStudentData.teacherId && s.id !== currentStudentId);
-
-                    // 2. Get ALL Support Messages to see who received one
+                    const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === currentStudentData.teacherId && s.id !== currentStudentId);
                     const msgsSnap = await getDocs(getColPath('support_messages'));
                     const receivedIds = new Set(msgsSnap.docs.map(d => d.data().toStudentId));
-
-                    // 3. Filter Candidates: Must NOT have received a message yet
                     const candidates = classmates.filter(s => !receivedIds.has(s.id));
 
                     let targetId;
-
                     if (candidates.length > 0) {
-                          // Pick random eligible candidate
                           const target = candidates[Math.floor(Math.random() * candidates.length)];
                           targetId = target.id;
                     } else {
-                        // Fallback: If everyone has received one, pick random from ANY classmate (to avoid blocking)
-                        // Or prevent sending? Let's assume fallback to any random classmate to keep the fun going.
                         if (classmates.length === 0) return notify("You are alone in class...", "error");
                         const target = classmates[Math.floor(Math.random() * classmates.length)];
                         targetId = target.id;
                     }
 
-                    // 4. Save Message
                     await addDoc(getColPath('support_messages'), {
                         fromStudentId: currentStudentId,
                         fromName: currentStudentData.name, 
@@ -1692,10 +1539,8 @@ setTeacherAuthMode: (mode) => {
                         isRead: false
                     });
 
-                    // 5. Update Student Stats (Bonus)
                     const today = new Date().toISOString().slice(0, 10);
                     const newBonus = (currentStudentData.bonusPoints || 0) + 1;
-                    
                     currentStudentData.bonusPoints = newBonus;
                     currentStudentData.lastSupportQuestDate = today;
 
@@ -1706,52 +1551,32 @@ setTeacherAuthMode: (mode) => {
 
                     notify("Random message sent! +1 Point 💎", "success");
                     app.closeSupportModal();
-                    // Update UI
                     app.setStudentTab('quests'); 
 
-                } catch (e) {
-                    console.error(e);
-                    notify("Error sending message", "error");
-                }
+                } catch (e) { console.error(e); notify("Error sending message", "error"); }
             },
             
-            // === RECEIVE SUPPORT LOGIC (NEW) ===
             checkIncomingSupport: async () => {
                 if (!currentStudentId) return;
-
-                const q = query(
-                    getColPath('support_messages'),
-                    where('toStudentId', '==', currentStudentId),
-                    where('isRead', '==', false)
-                );
-
+                const q = query(getColPath('support_messages'), where('toStudentId', '==', currentStudentId), where('isRead', '==', false));
                 const snap = await getDocs(q);
                 if (!snap.empty) {
-                    const msgDoc = snap.docs[0]; // Take the first one
+                    const msgDoc = snap.docs[0];
                     const msgData = msgDoc.data();
-                    
                     document.getElementById('receive-support-text').textContent = msgData.message;
-                    // Store doc ID to mark as read later
                     window.app.currentSupportMessageId = msgDoc.id;
-                    
                     document.getElementById('modal-receive-support').classList.remove('hidden');
                 }
             },
             
             acceptSupportMessage: async () => {
                 if (!window.app.currentSupportMessageId) return;
-                
                 try {
-                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'support_messages', window.app.currentSupportMessageId), {
-                        isRead: true
-                    });
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'support_messages', window.app.currentSupportMessageId), { isRead: true });
                     document.getElementById('modal-receive-support').classList.add('hidden');
                     window.app.currentSupportMessageId = null;
                     notify("Saved to your heart ❤️", "success");
-                } catch(e) {
-                    console.error(e);
-                    document.getElementById('modal-receive-support').classList.add('hidden');
-                }
+                } catch(e) { document.getElementById('modal-receive-support').classList.add('hidden'); }
             },
 
             studentLogin: async () => {
@@ -1770,28 +1595,23 @@ setTeacherAuthMode: (mode) => {
                     window.app.showScreen('screen-student-dash');
                     
                     loadStudentTasks();
-                    
-                    // CHECK FOR INCOMING MESSAGES
                     setTimeout(app.checkIncomingSupport, 1000);
                     
                 } catch (e) { notify("Error", "error"); }
             },
 
-            // === TASK SUBMISSION ===
             submitTask: async (taskId, correct, deadlineSec, answerType) => {
                 const val = document.getElementById(`input-${taskId}`).value.trim();
                 if (!val) return notify("Enter answer", "error");
 
-                // Check time
                 const isLate = (Date.now() / 1000) > deadlineSec;
 
-                // MANUAL REVIEW LOGIC
                 if (answerType === 'manual') {
                     try {
                         await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId), {
-                            status: 'review', // New status for manual review
+                            status: 'review', 
                             studentAnswer: val, 
-                            score: 0, // No score yet
+                            score: 0,
                             isLate: isLate,
                             completedAt: Date.now()
                         });
@@ -1801,33 +1621,20 @@ setTeacherAuthMode: (mode) => {
                     return;
                 }
 
-                // AUTO GRADING LOGIC
-                // Calculate similarity
                 const similarity = calculateSimilarity(val, correct);
-                
                 let score = 1;
                 let message = "";
-
-                if (similarity === 100) {
-                    score = 5;
-                    message = "Perfect! +5 points";
-                } else if (similarity >= 75) {
-                    score = 4;
-                    message = "Good! +4 points";
-                } else if (similarity >= 55) {
-                    score = 3;
-                    message = "Not bad. +3 points";
-                } else {
-                    score = 1;
-                    message = "Attempt counted. +1 point";
-                }
+                if (similarity === 100) { score = 5; message = "Perfect! +5 points"; } 
+                else if (similarity >= 75) { score = 4; message = "Good! +4 points"; } 
+                else if (similarity >= 55) { score = 3; message = "Not bad. +3 points"; } 
+                else { score = 1; message = "Attempt counted. +1 point"; }
 
                 try {
                     await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'tasks', taskId), {
                         status: 'completed', 
                         studentAnswer: val, 
                         score: score, 
-                        accuracy: similarity, // Save accuracy
+                        accuracy: similarity, 
                         isLate: isLate,
                         completedAt: Date.now()
                     });
@@ -1836,47 +1643,66 @@ setTeacherAuthMode: (mode) => {
                     loadStudentTasks();
                 } catch (e) { notify("Error", "error"); }
             },
-            // ============================================
 
             logout: async () => { 
                 localStorage.removeItem('student_id');
                 await signOut(auth); 
                 window.location.reload(); 
+            },
+
+            // --- LAZY IMAGE LOADING ---
+            loadAllVisibleImages: async (items) => {
+                 for (const item of items) {
+                     // Determine container ID based on whether it is a group (teacher) or task (student)
+                     const containerId = item.groupId ? `img-container-${item.groupId}` : `img-container-st-${item.id}`;
+                     const container = document.getElementById(containerId);
+                     
+                     if (container && item.linkedImageIds && item.linkedImageIds.length > 0) {
+                         const images = [];
+                         for(const id of item.linkedImageIds) {
+                             const imgData = await app.fetchImageById(id);
+                             if(imgData) images.push(imgData);
+                         }
+                         
+                         if(images.length > 0) {
+                             container.innerHTML = `
+                                <div class="grid grid-cols-${Math.min(3, images.length)} gap-2 mb-4 animate-slide-up">
+                                    ${images.map(src => `
+                                        <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
+                                            <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                             `;
+                         } else {
+                             container.innerHTML = '';
+                         }
+                     }
+                 }
             }
         };
 
         async function loadMyStudents() {
             if (!auth.currentUser) return;
-            // Запрашиваем только список студентов
             const studentsSnap = await getDocs(getColPath('students'));
-            
             const list = document.getElementById('student-list');
             const checklist = document.getElementById('student-checklist');
-            const myStudents = studentsSnap.docs
-                .map(d => ({id: d.id, ...d.data()}))
-                .filter(s => s.teacherId === auth.currentUser.uid);
+            const myStudents = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === auth.currentUser.uid);
             
             let listHtml = '';
             let checklistHtml = '';
 
             myStudents.forEach(s => {
-                // Генерируем карточки для вкладки "Класс"
                 listHtml += `
                     <div class="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col items-center text-center group relative shadow-sm">
                         <button onclick="app.deleteStudent('${s.id}')" class="absolute top-4 right-4 text-slate-200 hover:text-rose-500 transition-colors p-2">
                             <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
-                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl font-black mb-4">
-                            ${s.name[0]}
-                        </div>
+                        <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-xl font-black mb-4">${s.name[0]}</div>
                         <h4 class="font-black text-slate-800 truncate w-full px-4 mb-2">${s.name}</h4>
-                        
-                        <div class="bg-slate-50 border border-slate-100 text-slate-500 px-4 py-2 rounded-xl text-xs font-mono font-bold mt-2 break-all">
-                            ${s.phrase}
-                        </div>
+                        <div class="bg-slate-50 border border-slate-100 text-slate-500 px-4 py-2 rounded-xl text-xs font-mono font-bold mt-2 break-all">${s.phrase}</div>
                     </div>`;
 
-                // Генерируем список для выбора при создании задачи
                 checklistHtml += `
                     <label class="group flex items-center gap-4 p-5 bg-white rounded-2xl border-2 border-slate-50 cursor-pointer hover:border-indigo-400 transition-all">
                         <input type="checkbox" value="${s.id}" data-name="${s.name}" class="student-checkbox peer sr-only">
@@ -1894,25 +1720,18 @@ setTeacherAuthMode: (mode) => {
 
        async function loadTeacherTasks() {
             if (!auth.currentUser) return;
-            
-            // Show loading state if desired, or just clear list
             document.getElementById('teacher-tasks-list').innerHTML = '<div class="col-span-full text-center py-20 text-slate-400 font-bold animate-pulse">Loading tasks...</div>';
             document.getElementById('load-more-container').classList.add('hidden');
 
             try {
-                // 1. Fetch Drafts
                 const qDrafts = query(getColPath('drafts'), where('teacherId', '==', auth.currentUser.uid));
-                const draftsSnap = await getDocs(qDrafts);
+const draftsSnap = await getDocs(qDrafts);
                 drafts = draftsSnap.docs.map(d => ({id: d.id, ...d.data()}));
 
-                // 2. Fetch ALL Tasks
-                // Using simple where query, sorting in memory to avoid index requirements
                 const qTasks = query(getColPath('tasks'), where('teacherId', '==', auth.currentUser.uid));
                 const tasksSnap = await getDocs(qTasks);
                 
                 allLoadedTasks = tasksSnap.docs.map(d => ({id: d.id, ...d.data()}));
-                
-                // Sort by createdAt desc
                 allLoadedTasks.sort((a, b) => {
                     const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : a.createdAt) : 0;
                     const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : b.createdAt) : 0;
@@ -1926,192 +1745,177 @@ setTeacherAuthMode: (mode) => {
             }
         }
 
-function renderTaskBoard() {
-    const container = document.getElementById('teacher-tasks-list');
-    
-    // Группировка
-    const groupsMap = {};
-    allLoadedTasks.forEach(t => {
-        const gid = t.groupId || t.id;
-        // Fix: Force groupId to be gid so templates and logic can find it
-        if (!groupsMap[gid]) groupsMap[gid] = { ...t, groupId: gid, items: [] }; 
-        groupsMap[gid].items.push(t);
-    });
-    
-    const groupedTasksArray = Object.values(groupsMap).sort((a, b) => {
-         const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : a.createdAt) : 0;
-         const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : b.createdAt) : 0;
-         return timeB - timeA;
-    });
-
-    // Save global variable for edit logic
-    groupedTasks = groupedTasksArray;
-    
-    let html = '';
-
-    // --- РЕНДЕР ЧЕРНОВИКОВ ---
-    drafts.sort((a, b) => b.updatedAt - a.updatedAt).forEach(d => {
-        html += `
-            <div class="task-card bg-slate-50 p-6 rounded-[2rem] border-2 border-dashed border-slate-200 cursor-pointer relative group mb-4" onclick="app.openNewTaskForm('${d.id}')">
-                <div class="absolute top-6 right-14 bg-slate-200 text-slate-500 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Draft</div>
-                <div class="flex justify-between items-start mb-4">
-                      <div class="text-[10px] text-slate-400 font-black uppercase">Updated: ${new Date(d.updatedAt).toLocaleDateString()}</div>
-                    <button onclick="event.stopPropagation(); app.deleteDraft('${d.id}')" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash" class="w-5 h-5"></i></button>
-                </div>
-                <h4 class="font-black text-slate-700 text-lg mb-4 line-clamp-2 opacity-70 group-hover:opacity-100 transition-opacity whitespace-pre-wrap">${d.question || 'Untitled'}</h4>
-                <div class="w-full flex justify-end">
-                    <span class="text-xs font-bold text-indigo-500 flex items-center gap-1">Continue <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
-                </div>
-            </div>`;
-    });
-
-    // --- РЕНДЕР ЗАДАЧ ---
-    groupedTasksArray.forEach(g => {
-        const total = g.items.length;
-        const done = g.items.filter(i => i.status === 'completed' || i.status === 'review').length;
-        const prc = total === 0 ? 0 : Math.round((done / total) * 100);
-        const isScheduled = g.publishAt && g.publishAt.toMillis() > Date.now();
-        const publishDate = g.publishAt ? formatDate(g.publishAt.toDate()) : 'Now';
+    function renderTaskBoard() {
+        const container = document.getElementById('teacher-tasks-list');
+        const groupsMap = {};
+        allLoadedTasks.forEach(t => {
+            const gid = t.groupId || t.id;
+            if (!groupsMap[gid]) groupsMap[gid] = { ...t, groupId: gid, items: [] }; 
+            groupsMap[gid].items.push(t);
+        });
         
-        let images = [];
-        if (g.imageUrls && Array.isArray(g.imageUrls)) images = g.imageUrls;
-        else if (g.imageUrl) images = [g.imageUrl];
-        
-        const needsReviewCount = g.items.filter(i => i.status === 'review').length;
+        const groupedTasksArray = Object.values(groupsMap).sort((a, b) => {
+             const timeA = a.createdAt ? (a.createdAt.toMillis ? a.createdAt.toMillis() : a.createdAt) : 0;
+             const timeB = b.createdAt ? (b.createdAt.toMillis ? b.createdAt.toMillis() : b.createdAt) : 0;
+             return timeB - timeA;
+        });
 
-        // ВАЖНО: Добавляем mb-6 для отступа между карточками
-        html += `
-            <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full mb-6" id="task-card-${g.groupId}">
-                <div class="p-6 cursor-pointer flex flex-col flex-grow" onclick="app.toggleTaskAccordion('${g.groupId}')">
+        groupedTasks = groupedTasksArray;
+        let html = '';
+
+        drafts.sort((a, b) => b.updatedAt - a.updatedAt).forEach(d => {
+            html += `
+                <div class="task-card bg-slate-50 p-6 rounded-[2rem] border-2 border-dashed border-slate-200 cursor-pointer relative group mb-4" onclick="app.openNewTaskForm('${d.id}')">
+                    <div class="absolute top-6 right-14 bg-slate-200 text-slate-500 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Draft</div>
                     <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-2">
-                            <div class="text-[10px] text-slate-400 font-black uppercase">Deadline: ${formatDate(g.deadline.toDate())}</div>
-                            ${isScheduled ? '<div class="bg-amber-50 text-amber-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Scheduled</div>' : ''}
-                            ${needsReviewCount > 0 ? `<div class="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i> Review (${needsReviewCount})</div>` : ''}
-                        </div>
-                        <div>
-                            <button onclick="event.stopPropagation(); app.openNewTaskForm('${g.groupId}', 'published')" class="text-slate-300 hover:text-indigo-500 p-1 mr-2"><i data-lucide="pencil" class="w-5 h-5"></i></button>
-                            <button onclick="event.stopPropagation(); app.deleteTaskGroup('${g.groupId}')" class="text-slate-200 hover:text-rose-500 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                        </div>
+                          <div class="text-[10px] text-slate-400 font-black uppercase">Updated: ${new Date(d.updatedAt).toLocaleDateString()}</div>
+                        <button onclick="event.stopPropagation(); app.deleteDraft('${d.id}')" class="text-slate-300 hover:text-rose-500"><i data-lucide="trash" class="w-5 h-5"></i></button>
                     </div>
-                    
-                    ${images.length > 0 ? `
-                        <div class="grid grid-cols-${Math.min(3, images.length)} gap-2 mb-4">
-                            ${images.map(src => `
-                                <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img">
-                                    <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-
-                    <h4 class="font-black text-slate-800 text-lg mb-4 whitespace-pre-wrap line-clamp-2">${g.question}</h4>
-                    
-                    <div class="flex items-center justify-between mt-auto">
-                        <div class="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden mr-4 flex-1">
-                            <div class="h-full bg-indigo-500" style="width: ${prc}%"></div>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                             <i id="chevron-${g.groupId}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
-                        </div>
+                    <h4 class="font-black text-slate-700 text-lg mb-4 line-clamp-2 opacity-70 group-hover:opacity-100 transition-opacity whitespace-pre-wrap">${d.question || 'Untitled'}</h4>
+                    <div class="w-full flex justify-end">
+                        <span class="text-xs font-bold text-indigo-500 flex items-center gap-1">Continue <i data-lucide="arrow-right" class="w-3 h-3"></i></span>
                     </div>
-                </div>
+                </div>`;
+        });
 
-                <div id="task-body-${g.groupId}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
-                      <div class="p-6 border-t border-slate-100">
-                        <div class="text-slate-800 font-bold text-lg mb-6 whitespace-pre-wrap leading-relaxed border-b border-slate-200 pb-4">${g.question}</div>
-                        
-                         <div class="grid grid-cols-1 gap-4 mb-6">
-                            <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50">
-                                <div class="text-[10px] font-black uppercase text-indigo-400 mb-1 tracking-widest">Correct Answer</div>
-                                <div class="text-base font-black text-indigo-700">${g.correctAnswer || '(Manual Check)'}</div>
+        groupedTasksArray.forEach(g => {
+            const total = g.items.length;
+            const done = g.items.filter(i => i.status === 'completed' || i.status === 'review').length;
+            const prc = total === 0 ? 0 : Math.round((done / total) * 100);
+            const isScheduled = g.publishAt && g.publishAt.toMillis() > Date.now();
+            
+            // Legacy images handling + Placeholder for new lazy images
+            let legacyImages = [];
+            if (g.imageUrls && Array.isArray(g.imageUrls)) legacyImages = g.imageUrls;
+            else if (g.imageUrl) legacyImages = [g.imageUrl];
+            
+            const needsReviewCount = g.items.filter(i => i.status === 'review').length;
+
+            html += `
+                <div class="bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full mb-6" id="task-card-${g.groupId}">
+                    <div class="p-6 cursor-pointer flex flex-col flex-grow" onclick="app.toggleTaskAccordion('${g.groupId}')">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="text-[10px] text-slate-400 font-black uppercase">Deadline: ${formatDate(g.deadline.toDate())}</div>
+                                ${isScheduled ? '<div class="bg-amber-50 text-amber-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider">Scheduled</div>' : ''}
+                                ${needsReviewCount > 0 ? `<div class="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1"><i data-lucide="eye" class="w-3 h-3"></i> Review (${needsReviewCount})</div>` : ''}
                             </div>
-                         </div>
-
-                        <div class="space-y-3">
-                            <div class="text-[10px] font-black uppercase text-slate-400 mb-1 tracking-widest ml-2">Student List</div>
-                            ${g.items.map(item => {
-                                let statusColor = 'text-slate-300';
-                                let statusText = 'Pending';
-                                if (item.status === 'completed') {
-                                    statusColor = 'text-emerald-500';
-                                    statusText = `<i data-lucide="check-circle-2" class="w-3 h-3"></i> ${item.score} pts.`;
-                                } else if (item.status === 'review') {
-                                    statusColor = 'text-amber-500';
-                                    statusText = `<i data-lucide="clock" class="w-3 h-3"></i> Under Review`;
-                                }
-
-                                return `
-                                <div class="flex flex-col p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <div class="font-bold text-slate-800 text-sm">${item.studentName}</div>
-                                        <div class="text-xs font-black ${statusColor} flex items-center gap-1">
-                                            ${statusText}
-                                            ${item.status !== 'assigned' ? `
-                                                <button onclick="event.stopPropagation(); app.editScore('${item.id}', ${item.score})" class="p-1.5 ml-2 bg-slate-100 rounded-lg hover:bg-indigo-100 text-slate-400 hover:text-indigo-600 transition-colors" title="${item.status === 'review' ? 'Grade Now' : 'Edit Score'}">
-                                                    <i data-lucide="${item.status === 'review' ? 'star' : 'pencil'}" class="w-3 h-3"></i>
-                                                </button>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                    ${item.status === 'completed' || item.status === 'review' ? `
-                                        <div class="text-sm bg-slate-50 p-3 rounded-xl text-slate-600 mb-2 border border-slate-100/50">
-    <span class="font-bold text-slate-400 text-xs uppercase mr-2">Answer:</span> 
-    <div class="font-mono text-sm whitespace-pre-wrap mt-1">${item.studentAnswer}</div>
-</div>
-                                    ` : ''}
-                                </div>
-                                `}).join('')}
+                            <div>
+                                <button onclick="event.stopPropagation(); app.openNewTaskForm('${g.groupId}', 'published')" class="text-slate-300 hover:text-indigo-500 p-1 mr-2"><i data-lucide="pencil" class="w-5 h-5"></i></button>
+                                <button onclick="event.stopPropagation(); app.deleteTaskGroup('${g.groupId}')" class="text-slate-200 hover:text-rose-500 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+                            </div>
                         </div>
-                     </div>
-                </div>
-            </div>`;
-    });
+                        
+                        <!-- LEGACY IMAGES (If present) -->
+                        ${legacyImages.length > 0 ? `
+                            <div class="grid grid-cols-${Math.min(3, legacyImages.length)} gap-2 mb-4">
+                                ${legacyImages.map(src => `
+                                    <div class="${legacyImages.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
+                                        <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <!-- NEW LAZY IMAGES CONTAINER -->
+                        <div id="img-container-${g.groupId}">
+                           ${g.linkedImageIds && g.linkedImageIds.length > 0 ? `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>` : ''}
+                        </div>
 
-    if (allLoadedTasks.length === 0 && drafts.length === 0) {
-        container.innerHTML = '<div class="text-center text-slate-400 py-20 font-bold">No tasks found</div>';
-    } else {
-        container.innerHTML = html;
+                        <h4 class="font-black text-slate-800 text-lg mb-4 whitespace-pre-wrap line-clamp-2">${g.question}</h4>
+                        
+                        <div class="flex items-center justify-between mt-auto">
+                            <div class="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden mr-4 flex-1">
+                                <div class="h-full bg-indigo-500" style="width: ${prc}%"></div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
+                                 <i id="chevron-${g.groupId}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="task-body-${g.groupId}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
+                          <div class="p-6 border-t border-slate-100">
+                            <div class="text-slate-800 font-bold text-lg mb-6 whitespace-pre-wrap leading-relaxed border-b border-slate-200 pb-4">${g.question}</div>
+                             <div class="grid grid-cols-1 gap-4 mb-6">
+                                <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100/50">
+                                    <div class="text-[10px] font-black uppercase text-indigo-400 mb-1 tracking-widest">Correct Answer</div>
+                                    <div class="text-base font-black text-indigo-700">${g.correctAnswer || '(Manual Check)'}</div>
+                                </div>
+                             </div>
+
+                            <div class="space-y-3">
+                                <div class="text-[10px] font-black uppercase text-slate-400 mb-1 tracking-widest ml-2">Student List</div>
+                                ${g.items.map(item => {
+                                    let statusColor = 'text-slate-300';
+                                    let statusText = 'Pending';
+                                    if (item.status === 'completed') {
+                                        statusColor = 'text-emerald-500';
+                                        statusText = `<i data-lucide="check-circle-2" class="w-3 h-3"></i> ${item.score} pts.`;
+                                    } else if (item.status === 'review') {
+                                        statusColor = 'text-amber-500';
+                                        statusText = `<i data-lucide="clock" class="w-3 h-3"></i> Under Review`;
+                                    }
+                                    return `
+                                    <div class="flex flex-col p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="font-bold text-slate-800 text-sm">${item.studentName}</div>
+                                            <div class="text-xs font-black ${statusColor} flex items-center gap-1">
+                                                ${statusText}
+                                                ${item.status !== 'assigned' ? `
+                                                    <button onclick="event.stopPropagation(); app.editScore('${item.id}', ${item.score})" class="p-1.5 ml-2 bg-slate-100 rounded-lg hover:bg-indigo-100 text-slate-400 hover:text-indigo-600 transition-colors" title="${item.status === 'review' ? 'Grade Now' : 'Edit Score'}">
+                                                        <i data-lucide="${item.status === 'review' ? 'star' : 'pencil'}" class="w-3 h-3"></i>
+                                                    </button>
+                                                ` : ''}
+                                            </div>
+                                        </div>
+                                        ${item.status === 'completed' || item.status === 'review' ? `
+                                            <div class="text-sm bg-slate-50 p-3 rounded-xl text-slate-600 mb-2 border border-slate-100/50">
+                                                <span class="font-bold text-slate-400 text-xs uppercase mr-2">Answer:</span> 
+                                                <div class="font-mono text-sm whitespace-pre-wrap mt-1">${item.studentAnswer}</div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    `}).join('')}
+                            </div>
+                          </div>
+                    </div>
+                </div>`;
+        });
+
+        if (allLoadedTasks.length === 0 && drafts.length === 0) {
+            container.innerHTML = '<div class="text-center text-slate-400 py-20 font-bold">No tasks found</div>';
+        } else {
+            container.innerHTML = html;
+        }
+        lucide.createIcons();
+        
+        // LAZY LOAD IMAGES AFTER RENDER
+        app.loadAllVisibleImages(groupedTasksArray);
     }
-    
-    lucide.createIcons();
-}
 
-
-        async function loadStatistics() {
+    async function loadStatistics() {
             if (!auth.currentUser) return;
             const [studentsSnap, tasksSnap] = await Promise.all([ getDocs(getColPath('students')), getDocs(getColPath('tasks')) ]);
             const students = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === auth.currentUser.uid);
             const tasks = tasksSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(t => t.teacherId === auth.currentUser.uid);
             const completedTasks = tasks.filter(t => t.status === 'completed').sort((a, b) => a.completedAt - b.completedAt);
-
-            const totalScore = completedTasks.reduce((acc, t) => acc + (t.score || 0), 0);
-            const avgScore = completedTasks.length ? (totalScore / completedTasks.length).toFixed(1) : 0;
-            const completionRate = tasks.length ? Math.round((completedTasks.length / tasks.length) * 100) : 0;
-
             const dates = [...new Set(completedTasks.map(t => new Date(t.completedAt).toLocaleDateString()))];
             const colors = ['#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'];
             
             const datasets = students.map((s, idx) => {
                 let cumulative = 0;
                 const offset = idx * 0.1; 
-                
                 return {
                     label: s.name,
                     data: dates.map(date => {
-                        const dayScore = completedTasks
-                            .filter(t => t.studentId === s.id && new Date(t.completedAt).toLocaleDateString() === date)
-                            .reduce((acc, c) => acc + (c.score || 0), 0);
+                        const dayScore = completedTasks.filter(t => t.studentId === s.id && new Date(t.completedAt).toLocaleDateString() === date).reduce((acc, c) => acc + (c.score || 0), 0);
                         cumulative += dayScore;
                         return cumulative + offset;
                     }),
                     borderColor: colors[idx % colors.length],
                     backgroundColor: colors[idx % colors.length],
-                    tension: 0.4, 
-                    fill: false, 
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    pointHoverRadius: 5
+                    tension: 0.4, fill: false, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5
                 };
             });
 
@@ -2122,131 +1926,112 @@ function renderTaskBoard() {
                 options: { 
                     responsive: true, maintainAspectRatio: false, 
                     interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                            titleColor: '#1e293b',
-                            bodyColor: '#475569',
-                            borderColor: '#e2e8f0',
-                            borderWidth: 1,
-                            padding: 10,
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) label += ': ';
-                                    if (context.parsed.y !== null) label += Math.floor(context.parsed.y);
-                                    return label;
-                                }
-                            }
-                        },
-                        legend: { labels: { usePointStyle: true, boxWidth: 8 } }
-                    },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: '#f8fafc' },
-                            ticks: { callback: function(value) { if (value % 1 === 0) return value; } }
-                        }, 
-                        x: { grid: { display: false } } 
-                    } 
+                    plugins: { legend: { labels: { usePointStyle: true, boxWidth: 8 } } },
+                    scales: { y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { callback: function(value) { if (value % 1 === 0) return value; } } }, x: { grid: { display: false } } } 
                 }
             });
-        }
+    }
 
-        // === ФУНКЦИЯ ОТРИСОВКИ РЕАКЦИИ С ТАЙМЕРОМ ===
-// === ИСПРАВЛЕННАЯ ФУНКЦИЯ (РОВНЫЙ КРУГ) ===
-function getReactionHTML(r) {
-    const now = Date.now();
-    const lifeTime = 2 * 24 * 60 * 60 * 1000; // 2 дня
-    const elapsed = now - r.timestamp;
-
-    if (elapsed > lifeTime) return '';
-
-    const percentLeft = Math.max(0, 1 - (elapsed / lifeTime));
-    
-    // Настройки круга (координатная сетка 32x32)
-    const size = 32;
-    const center = size / 2; // 16
-    const strokeWidth = r.isTeacher ? 3 : 2;
-    const radius = (size - strokeWidth) / 2; // Авто-расчет радиуса, чтобы не обрезало края
-    const circumference = 2 * Math.PI * radius; 
-    const offset = circumference * (1 - percentLeft); 
-
-    let ringColor = r.isTeacher ? '#6366f1' : '#3b82f6'; 
-    if (!r.isTeacher && percentLeft < 0.2) ringColor = '#ef4444'; 
-
-    return `
-    <div class="relative w-7 h-7 mx-0.5 group/react cursor-help transition-transform hover:scale-110" title="${r.isTeacher ? 'Teacher' : 'Student'} reaction">
+    function getReactionHTML(r) {
+        const now = Date.now();
+        const lifeTime = 2 * 24 * 60 * 60 * 1000; 
+        const elapsed = now - r.timestamp;
+        if (elapsed > lifeTime) return '';
+        const percentLeft = Math.max(0, 1 - (elapsed / lifeTime));
         
-        <svg viewBox="0 0 ${size} ${size}" class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none drop-shadow-sm">
-            <circle cx="${center}" cy="${center}" r="${radius}" fill="white" stroke="#e2e8f0" stroke-width="${strokeWidth}"></circle>
-            <circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="${strokeWidth}" 
-                    stroke-dasharray="${circumference}" 
-                    stroke-dashoffset="${offset}"
-                    stroke-linecap="round"
-                    class="transition-all duration-1000"></circle>
-        </svg>
+        const size = 32;
+        const center = size / 2;
+        const strokeWidth = r.isTeacher ? 3 : 2;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius; 
+        const offset = circumference * (1 - percentLeft); 
+        let ringColor = r.isTeacher ? '#6366f1' : '#3b82f6'; 
+        if (!r.isTeacher && percentLeft < 0.2) ringColor = '#ef4444'; 
 
-        <div class="absolute inset-0 flex items-center justify-center pb-0.5 text-sm select-none">
-            ${r.emoji}
-        </div>
-
-        ${r.isTeacher ? '<div class="absolute -top-1 -right-1 text-[8px] z-10 drop-shadow-md">🎓</div>' : ''}
-    </div>
-    `;
-}
+        return `
+        <div class="relative w-7 h-7 mx-0.5 group/react cursor-help transition-transform hover:scale-110" title="${r.isTeacher ? 'Teacher' : 'Student'} reaction">
+            <svg viewBox="0 0 ${size} ${size}" class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none drop-shadow-sm">
+                <circle cx="${center}" cy="${center}" r="${radius}" fill="white" stroke="#e2e8f0" stroke-width="${strokeWidth}"></circle>
+                <circle cx="${center}" cy="${center}" r="${radius}" fill="none" stroke="${ringColor}" stroke-width="${strokeWidth}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round" class="transition-all duration-1000"></circle>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center pb-0.5 text-sm select-none">${r.emoji}</div>
+            ${r.isTeacher ? '<div class="absolute -top-1 -right-1 text-[8px] z-10 drop-shadow-md">🎓</div>' : ''}
+        </div>`;
+    }
 
     async function loadTeacherLeaderboard() {
-    if (!auth.currentUser) return;
-    const teacherId = auth.currentUser.uid;
+        if (!auth.currentUser) return;
+        const teacherId = auth.currentUser.uid;
+        const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([
+    getDocs(query(getColPath('students'), where('teacherId', '==', teacherId))),
+    getDocs(query(getColPath('tasks'), where('teacherId', '==', teacherId))),
+    getDocs(getColPath('reactions')) // Реакции обычно общие или фильтруются в коде
+]);
+        const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
+        const container = document.getElementById('teacher-rating-list');
+        if (classmates.length === 0) {
+            container.innerHTML = '<div class="text-center text-slate-300 py-20 font-bold italic">Class is empty</div>';
+        } else {
+            const allTasks = tasksSnap.docs.map(d => d.data()).filter(t => t.teacherId === teacherId);
+            const allReactions = reactionsSnap.docs.map(d => d.data());
+            const scores = {};
+            classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
+            allTasks.forEach(t => { if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0); });
+            const leaderboard = classmates.map(s => ({ id: s.id, name: s.name, score: scores[s.id] })).sort((a, b) => b.score - a.score);
+            let html = `<div class="bg-white rounded-[2rem] border border-slate-100 p-2">`;
+            leaderboard.forEach((user, index) => {
+                const rank = index + 1;
+                const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
+                const myReactionToHim = receivedReactions.find(r => r.fromStudentId === teacherId);
+                let iconColor = 'bg-slate-100 text-slate-500';
+                let iconContent = rank;
+                if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
+                else if (rank === 2) { iconColor = 'bg-slate-200 text-slate-600'; iconContent = '2'; }
+                else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
 
-    // Load data including MESSAGES now
-    const [studentsSnap, tasksSnap, reactionsSnap, messagesSnap] = await Promise.all([
-        getDocs(getColPath('students')),
-        getDocs(getColPath('tasks')),
-        getDocs(getColPath('reactions')),
-        getDocs(getColPath('support_messages'))
-    ]);
+                html += `
+                <div class="flex items-center gap-4 p-4 rounded-2xl">
+                    <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">${iconContent}</div>
+                    <div class="flex-grow min-w-0">
+                        <div class="font-bold text-slate-700 text-lg truncate">${user.name}</div>
+                        <div class="flex flex-wrap gap-1 mt-1 items-center">
+                            ${receivedReactions.map(r => getReactionHTML(r)).join('')}
+                            <button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-200' : ''}">
+                                <i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="font-black text-xl text-slate-800">${user.score}</div>
+                </div>
+                ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+    }
 
-    const classmates = studentsSnap.docs
-        .map(d => ({id: d.id, ...d.data()}))
-        .filter(s => s.teacherId === teacherId);
-        
-    // Create a map for easy name lookup
-    const studentsMap = {};
-    classmates.forEach(s => studentsMap[s.id] = s.name);
-    studentsMap[teacherId] = "Teacher"; // Just in case
-
-    const container = document.getElementById('teacher-rating-list');
-
-    // === 1. RENDER LEADERBOARD ===
-    if (classmates.length === 0) {
-        container.innerHTML = '<div class="text-center text-slate-300 py-20 font-bold italic">Class is empty</div>';
-    } else {
+    async function loadStudentLeaderboard() {
+        if (!currentStudentData || !currentStudentId) return;
+        const teacherId = currentStudentData.teacherId;
+        const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([ getDocs(getColPath('students')), getDocs(getColPath('tasks')), getDocs(getColPath('reactions')) ]);
+        const classmates = studentsSnap.docs.map(d => ({id: d.id, ...d.data()})).filter(s => s.teacherId === teacherId);
         const allTasks = tasksSnap.docs.map(d => d.data()).filter(t => t.teacherId === teacherId);
         const allReactions = reactionsSnap.docs.map(d => d.data());
-
-        // Calculate scores
         const scores = {};
         classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
-        allTasks.forEach(t => {
-            if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0);
-        });
-
-        // Sort
-        const leaderboard = classmates.map(s => ({
-            id: s.id,
-            name: s.name,
-            score: scores[s.id]
-        })).sort((a, b) => b.score - a.score);
-
-        let html = `<div class="bg-white rounded-[2rem] border border-slate-100 p-2">`;
-
+        allTasks.forEach(t => { if (scores[t.studentId] !== undefined) scores[t.studentId] += (t.score || 0); });
+        const leaderboard = classmates.map(s => ({ id: s.id, name: s.id === currentStudentId ? "You" : "Student", realName: s.name, score: scores[s.id] })).sort((a, b) => b.score - a.score);
+        const container = document.getElementById('student-rating-list');
+        const myRankIndex = leaderboard.findIndex(x => x.id === currentStudentId);
+        if (myRankIndex === -1) { container.innerHTML = '<div class="text-center text-slate-400">You are not on the list yet.</div>'; return; }
+        
+        let html = '<div class="bg-white rounded-[2rem] border border-slate-100 p-2">';
         leaderboard.forEach((user, index) => {
             const rank = index + 1;
+            const isMe = user.id === currentStudentId;
             const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
-            const myReactionToHim = receivedReactions.find(r => r.fromStudentId === teacherId);
-
+            const myReactionToHim = receivedReactions.find(r => r.fromStudentId === currentStudentId);
             let iconColor = 'bg-slate-100 text-slate-500';
             let iconContent = rank;
             if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
@@ -2254,385 +2039,133 @@ function getReactionHTML(r) {
             else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
 
             html += `
-        <div class="flex items-center gap-4 p-4 rounded-2xl">
-            <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">
-                ${iconContent}
-            </div>
-            <div class="flex-grow min-w-0">
-                <div class="font-bold text-slate-700 text-lg truncate">${user.name}</div>
-                
-                <div class="flex flex-wrap gap-1 mt-1 items-center">
-                    ${receivedReactions.map(r => getReactionHTML(r)).join('')}
-                    
-                    <button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-400 hover:text-indigo-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-indigo-100 text-indigo-600 ring-2 ring-indigo-200' : ''}">
-                        <i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="font-black text-xl text-slate-800">${user.score}</div>
-        </div>
-        ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
-    `;
-        });
-
-        html += `</div>`;
-        container.innerHTML = html;
-    }
-
-    // === 2. RENDER ACTIVITY WIDGET ===
-    const activityContainer = document.getElementById('teacher-activity-list');
-    
-    // Process Reactions
-    const reactions = reactionsSnap.docs.map(d => {
-        const data = d.data();
-        return {
-            type: 'reaction',
-            fromId: data.fromStudentId,
-            toId: data.toStudentId,
-            content: data.emoji,
-            timestamp: data.timestamp,
-            isTeacher: data.isTeacher
-        };
-    }).filter(r => (studentsMap[r.toId] && (studentsMap[r.fromId] || r.isTeacher))); // Ensure valid participants
-
-    // Process Messages
-    const messages = messagesSnap.docs.map(d => {
-        const data = d.data();
-        return {
-            type: 'message',
-            fromId: data.fromStudentId,
-            toId: data.toStudentId,
-            content: data.message,
-            timestamp: data.timestamp
-        };
-    }).filter(m => (studentsMap[m.toId] && studentsMap[m.fromId]));
-
-    // Combine and Sort
-    const activities = [...reactions, ...messages].sort((a, b) => b.timestamp - a.timestamp);
-    
-    if (activities.length === 0) {
-        activityContainer.innerHTML = '<div class="text-center text-slate-300 py-10 font-medium">No recent activity</div>';
-    } else {
-        let activityHtml = '';
-        activities.forEach(item => {
-            const fromName = item.isTeacher ? 'Teacher' : (studentsMap[item.fromId] || 'Unknown');
-            const toName = studentsMap[item.toId] || 'Unknown';
-            const timeStr = formatRelativeTime(item.timestamp);
-            
-            if (item.type === 'reaction') {
-                activityHtml += `
-                    <div class="flex gap-3 items-start p-3 bg-slate-50/50 rounded-2xl border border-slate-50 hover:bg-slate-50 transition-colors">
-                        <div class="w-8 h-8 rounded-full bg-white border border-slate-100 flex items-center justify-center shrink-0 shadow-sm text-lg">
-                            ${item.content}
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm text-slate-600 leading-snug">
-                                <span class="font-bold text-slate-800">${fromName}</span> sent emoji to <span class="font-bold text-slate-800">${toName}</span>
-                            </p>
-                            <div class="text-[10px] text-slate-400 font-bold mt-1">${timeStr}</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                activityHtml += `
-                    <div class="flex gap-3 items-start p-3 bg-pink-50/30 rounded-2xl border border-pink-50 hover:bg-pink-50/60 transition-colors">
-                        <div class="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center shrink-0 shadow-sm text-pink-500">
-                            <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
-                        </div>
-                        <div class="min-w-0">
-                            <p class="text-sm text-slate-600 leading-snug">
-                                <span class="font-bold text-slate-800">${fromName}</span> wished <span class="font-bold text-slate-800">${toName}</span>
-                            </p>
-                            <div class="text-xs text-slate-500 italic mt-1 line-clamp-2">"${item.content}"</div>
-                            <div class="text-[10px] text-slate-400 font-bold mt-1">${timeStr}</div>
-                        </div>
-                    </div>
-                `;
-            }
-        });
-        activityContainer.innerHTML = activityHtml;
-    }
-    
-    lucide.createIcons();
-}
-
-        async function loadStudentLeaderboard() {
-    if (!currentStudentData || !currentStudentId) return;
-
-    // 1. Get teacher ID
-    const teacherId = currentStudentData.teacherId;
-
-    // 2. Load data
-    const [studentsSnap, tasksSnap, reactionsSnap] = await Promise.all([
-        getDocs(getColPath('students')),
-        getDocs(getColPath('tasks')),
-        getDocs(getColPath('reactions'))
-    ]);
-
-    const classmates = studentsSnap.docs
-        .map(d => ({id: d.id, ...d.data()}))
-        .filter(s => s.teacherId === teacherId);
-
-    const allTasks = tasksSnap.docs
-        .map(d => d.data())
-        .filter(t => t.teacherId === teacherId);
-        
-    const allReactions = reactionsSnap.docs
-        .map(d => d.data());
-
-    // 3. Calc scores
-    const scores = {};
-    classmates.forEach(s => scores[s.id] = (s.bonusPoints || 0)); 
-    
-    allTasks.forEach(t => {
-        if (scores[t.studentId] !== undefined) {
-            scores[t.studentId] += (t.score || 0);
-        }
-    });
-
-    // 4. Sort
-    const leaderboard = classmates.map(s => ({
-        id: s.id,
-        name: s.id === currentStudentId ? "You" : "Student", 
-        realName: s.name, 
-        score: scores[s.id]
-    })).sort((a, b) => b.score - a.score);
-
-    // 5. Render
-    const container = document.getElementById('student-rating-list');
-    const myRankIndex = leaderboard.findIndex(x => x.id === currentStudentId);
-    
-    if (myRankIndex === -1) {
-        container.innerHTML = '<div class="text-center text-slate-400">You are not on the list yet.</div>';
-        return;
-    }
-
-    const myData = leaderboard[myRankIndex];
-
-    // Подготовка данных для верхней карточки (Your Result)
-    const myRank = myRankIndex + 1;
-    let myIconColor = 'bg-slate-100 text-slate-500';
-    let myIconContent = myRank;
-    
-    if (myRank === 1) { myIconColor = 'bg-yellow-100 text-yellow-600'; myIconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
-    else if (myRank === 2) { myIconColor = 'bg-slate-200 text-slate-600'; myIconContent = '2'; }
-    else if (myRank === 3) { myIconColor = 'bg-amber-100 text-amber-700'; myIconContent = '3'; }
-
-    // Реакции для меня
-    const myReceivedReactions = allReactions.filter(r => r.toStudentId === myData.id);
-    
-    let html = '';
-
-
-    // --- СПИСОК: Leaderboard ---
-    leaderboard.forEach((user, index) => {
-        const rank = index + 1;
-        const isMe = user.id === currentStudentId;
-        
-        // Реакции, полученные этим пользователем
-        const receivedReactions = allReactions.filter(r => r.toStudentId === user.id);
-        
-        // Проверяем, ставил ли Я реакцию этому пользователю
-        const myReactionToHim = receivedReactions.find(r => r.fromStudentId === currentStudentId);
-        
-        let iconColor = 'bg-slate-100 text-slate-500';
-        let iconContent = rank;
-        if (rank === 1) { iconColor = 'bg-yellow-100 text-yellow-600'; iconContent = '<i data-lucide="trophy" class="w-4 h-4"></i>'; }
-        else if (rank === 2) { iconColor = 'bg-slate-200 text-slate-600'; iconContent = '2'; }
-        else if (rank === 3) { iconColor = 'bg-amber-100 text-amber-700'; iconContent = '3'; }
-
-        html += `
             <div class="flex items-center gap-4 p-4 rounded-2xl ${isMe ? 'bg-blue-50/50 border border-blue-100/50' : ''}">
-                <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">
-                    ${iconContent}
-                </div>
+                <div class="w-10 h-10 rounded-full ${iconColor} flex items-center justify-center font-black text-sm shrink-0">${iconContent}</div>
                 <div class="flex-grow min-w-0">
-                    <div class="font-bold ${isMe ? 'text-blue-700' : 'text-slate-700'} text-lg truncate">
-                        ${user.name} ${isMe ? '(You)' : ''}
-                    </div>
-                    
+                    <div class="font-bold ${isMe ? 'text-blue-700' : 'text-slate-700'} text-lg truncate">${user.name} ${isMe ? '(You)' : ''}</div>
                     <div class="flex flex-wrap gap-1 mt-1">
                         ${receivedReactions.map(r => getReactionHTML(r)).join('')}
-                        
-                        ${!isMe ? `
-                            <button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-200' : ''}">
-                                    <i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i>
-                            </button>
-                        ` : ''}
+                        ${!isMe ? `<button onclick="app.openEmojiModal('${user.id}', ${!!myReactionToHim})" class="ml-1 w-6 h-6 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-400 hover:text-blue-500 flex items-center justify-center transition-all ${myReactionToHim ? 'bg-blue-100 text-blue-600 ring-2 ring-blue-200' : ''}"><i data-lucide="${myReactionToHim ? 'pencil' : 'smile-plus'}" class="w-3 h-3"></i></button>` : ''}
                     </div>
                 </div>
                 <div class="font-black text-xl ${isMe ? 'text-blue-600' : 'text-slate-800'}">${user.score}</div>
             </div>
             ${index < leaderboard.length - 1 ? '<div class="h-px bg-slate-50 mx-4"></div>' : ''}
-        `;
-    });
-
-    html += `</div>`;
-    container.innerHTML = html;
-    lucide.createIcons();
-}
-
-        async function loadStudentQuests() {
-            if (!currentStudentId) return;
-
-            const questContainer = document.getElementById('student-quests-list');
-            const today = new Date().toISOString().slice(0, 10);
-            
-            // Проверка для 1-го квеста (Реакции)
-            const isReactionClaimed = currentStudentData.lastRewardDate === today;
-            
-            // Проверка для 2-го квеста (Поддержка)
-            const isSupportClaimed = currentStudentData.lastSupportQuestDate === today;
-
-            // Генерируем HTML для обоих квестов
-            let html = '';
-
-            // --- QUEST 1: Social Butterfly (Существующий) ---
-            html += `
-                <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 flex flex-col">
-                    <div class="relative z-10 flex flex-col h-full">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/10">Daily Quest</span>
-                            ${isReactionClaimed 
-                                ? '<div class="w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>' 
-                                : '<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div>'}
-                        </div>
-                        
-                        <h3 class="font-black text-2xl mb-2">Social Butterfly</h3>
-                        <p class="text-indigo-100 font-medium mb-8 leading-relaxed opacity-90">React to a classmate's profile on the Leaderboard.</p>
-                        
-                        <div class="mt-auto">
-                            ${isReactionClaimed 
-                                ? '<button disabled class="w-full bg-white/20 text-white cursor-default px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 border border-white/10">Completed <i data-lucide="check-circle" class="w-5 h-5"></i></button>'
-                                : `<button onclick="app.setStudentTab('rating')" class="w-full bg-white text-indigo-600 px-6 py-4 rounded-xl font-bold shadow-lg hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 group-hover:shadow-indigo-900/20">Go to Leaderboard <i data-lucide="arrow-right" class="w-5 h-5"></i></button>`
-                            }
-                        </div>
-                    </div>
-                    <div class="absolute -right-6 -bottom-6 opacity-20 transform rotate-12 scale-150"><i data-lucide="smile-plus" class="w-48 h-48"></i></div>
-                </div>
             `;
-
-            // --- QUEST 2: Support Hero (НОВЫЙ) ---
-            html += `
-                <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 flex flex-col">
-                    <div class="relative z-10 flex flex-col h-full">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/10">Daily Quest</span>
-                            ${isSupportClaimed 
-                                ? '<div class="w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>' 
-                                : '<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div>'}
-                        </div>
-                        
-                        <h3 class="font-black text-2xl mb-2">Support Hero</h3>
-                        <p class="text-pink-100 font-medium mb-8 leading-relaxed opacity-90">Write a kind message to support your classmate.</p>
-                        
-                        <div class="mt-auto">
-                            ${isSupportClaimed 
-                                ? '<button disabled class="w-full bg-white/20 text-white cursor-default px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 border border-white/10">Completed <i data-lucide="check-circle" class="w-5 h-5"></i></button>'
-                                : `<button onclick="app.openSupportModal()" class="w-full bg-white text-pink-600 px-6 py-4 rounded-xl font-bold shadow-lg hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 group-hover:shadow-pink-900/20">Write Message <i data-lucide="pen-tool" class="w-5 h-5"></i></button>`
-                            }
-                        </div>
-                    </div>
-                    <div class="absolute -right-6 -bottom-6 opacity-20 transform rotate-12 scale-150"><i data-lucide="heart-handshake" class="w-48 h-48"></i></div>
-                </div>
-            `;
-
-            questContainer.innerHTML = html;
-            lucide.createIcons();
-        }
-
-        async function loadStudentTasks() {
-    if (!currentStudentId) return;
-    
-    // ОПТИМИЗАЦИЯ: Запрос только задач этого студента
-    // Если в консоли появится ошибка про индексы - нужно нажать на ссылку в ошибке
-    const q = query(getColPath('tasks'), where('studentId', '==', currentStudentId));
-    
-    const snap = await getDocs(q);
-    const tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-
-    // Сортировка на клиенте
-    tasks.sort((a, b) => b.createdAt - a.createdAt);
-
-    // Дальше ваш код без изменений
-    const taskScore = tasks.reduce((acc, t) => acc + (t.score || 0), 0);
-    const bonus = currentStudentData.bonusPoints || 0;
-    document.getElementById('student-total-score').textContent = taskScore + bonus;
-    
-    const list = document.getElementById('student-tasks-list');
-    
-    if (tasks.length === 0) {
-        list.innerHTML = '<div class="col-span-full text-center text-slate-400 py-20 font-bold">No tasks yet</div>';
-        return;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+        lucide.createIcons();
     }
 
-    let html = '';
-    tasks.forEach(t => {
-        const isDone = t.status === 'completed';
-        const isReview = t.status === 'review';
-        const isScheduled = t.publishAt && t.publishAt.toMillis() > Date.now();
-        if (isScheduled) return;
-
-        const deadlineDate = t.deadline ? t.deadline.toDate() : null;
-        const isLate = deadlineDate && (Date.now() > deadlineDate.getTime()) && !isDone && !isReview;
-
-        let images = [];
-        if (t.imageUrls && Array.isArray(t.imageUrls)) images = t.imageUrls;
-        else if (t.imageUrl) images = [t.imageUrl];
-
-        let statusText = 'Pending';
-        let statusColor = 'text-slate-300';
-        
-        if (isDone) {
-            statusColor = 'text-emerald-500';
-            statusText = `<span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="w-4 h-4"></i> ${t.score} pts.</span>`;
-        } else if (isReview) {
-            statusColor = 'text-amber-500';
-            statusText = `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Under Review</span>`;
-        }
+    async function loadStudentQuests() {
+        if (!currentStudentId) return;
+        const questContainer = document.getElementById('student-quests-list');
+        const today = new Date().toISOString().slice(0, 10);
+        const isReactionClaimed = currentStudentData.lastRewardDate === today;
+        const isSupportClaimed = currentStudentData.lastSupportQuestDate === today;
+        let html = '';
 
         html += `
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 flex flex-col">
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/10">Daily Quest</span>
+                        ${isReactionClaimed ? '<div class="w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>' : '<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div>'}
+                    </div>
+                    <h3 class="font-black text-2xl mb-2">Social Butterfly</h3>
+                    <p class="text-indigo-100 font-medium mb-8 leading-relaxed opacity-90">React to a classmate's profile on the Leaderboard.</p>
+                    <div class="mt-auto">
+                        ${isReactionClaimed ? '<button disabled class="w-full bg-white/20 text-white cursor-default px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 border border-white/10">Completed <i data-lucide="check-circle" class="w-5 h-5"></i></button>' : `<button onclick="app.setStudentTab('rating')" class="w-full bg-white text-indigo-600 px-6 py-4 rounded-xl font-bold shadow-lg hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2 group-hover:shadow-indigo-900/20">Go to Leaderboard <i data-lucide="arrow-right" class="w-5 h-5"></i></button>`}
+                    </div>
+                </div>
+                <div class="absolute -right-6 -bottom-6 opacity-20 transform rotate-12 scale-150"><i data-lucide="smile-plus" class="w-48 h-48"></i></div>
+            </div>
+            <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 flex flex-col">
+                <div class="relative z-10 flex flex-col h-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/10">Daily Quest</span>
+                        ${isSupportClaimed ? '<div class="w-8 h-8 bg-emerald-400 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-5 h-5 text-white"></i></div>' : '<div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center animate-pulse"><i data-lucide="clock" class="w-5 h-5 text-white"></i></div>'}
+                    </div>
+                    <h3 class="font-black text-2xl mb-2">Support Hero</h3>
+                    <p class="text-pink-100 font-medium mb-8 leading-relaxed opacity-90">Write a kind message to support your classmate.</p>
+                    <div class="mt-auto">
+                        ${isSupportClaimed ? '<button disabled class="w-full bg-white/20 text-white cursor-default px-6 py-4 rounded-xl font-bold flex items-center justify-center gap-2 border border-white/10">Completed <i data-lucide="check-circle" class="w-5 h-5"></i></button>' : `<button onclick="app.openSupportModal()" class="w-full bg-white text-pink-600 px-6 py-4 rounded-xl font-bold shadow-lg hover:bg-pink-50 transition-colors flex items-center justify-center gap-2 group-hover:shadow-pink-900/20">Write Message <i data-lucide="pen-tool" class="w-5 h-5"></i></button>`}
+                    </div>
+                </div>
+                <div class="absolute -right-6 -bottom-6 opacity-20 transform rotate-12 scale-150"><i data-lucide="heart-handshake" class="w-48 h-48"></i></div>
+            </div>`;
+        questContainer.innerHTML = html;
+        lucide.createIcons();
+    }
+
+    async function loadStudentTasks() {
+        if (!currentStudentId) return;
+        const q = query(getColPath('tasks'), where('studentId', '==', currentStudentId));
+        const snap = await getDocs(q);
+        const tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        tasks.sort((a, b) => b.createdAt - a.createdAt);
+        const taskScore = tasks.reduce((acc, t) => acc + (t.score || 0), 0);
+        const bonus = currentStudentData.bonusPoints || 0;
+        document.getElementById('student-total-score').textContent = taskScore + bonus;
+        
+        const list = document.getElementById('student-tasks-list');
+        if (tasks.length === 0) { list.innerHTML = '<div class="col-span-full text-center text-slate-400 py-20 font-bold">No tasks yet</div>'; return; }
+
+        let html = '';
+        tasks.forEach(t => {
+            const isDone = t.status === 'completed';
+            const isReview = t.status === 'review';
+            const isScheduled = t.publishAt && t.publishAt.toMillis() > Date.now();
+            if (isScheduled) return;
+            const deadlineDate = t.deadline ? t.deadline.toDate() : null;
+            const isLate = deadlineDate && (Date.now() > deadlineDate.getTime()) && !isDone && !isReview;
+            let legacyImages = [];
+            if (t.imageUrls && Array.isArray(t.imageUrls)) legacyImages = t.imageUrls;
+            else if (t.imageUrl) legacyImages = [t.imageUrl];
+            let statusText = 'Pending';
+            let statusColor = 'text-slate-300';
+            if (isDone) { statusColor = 'text-emerald-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="w-4 h-4"></i> ${t.score} pts.</span>`; } 
+            else if (isReview) { statusColor = 'text-amber-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Under Review</span>`; }
+
+            html += `
             <div id="st-card-${t.id}" class="bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-500 overflow-hidden flex flex-col h-full group">
-                
                 <div class="cursor-pointer px-6 py-5 flex flex-col flex-grow" onclick="app.toggleStudentTaskAccordion('${t.id}')">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex flex-col gap-1">
                             <div class="text-[10px] ${isLate ? 'text-rose-500 font-bold' : 'text-slate-400 font-black'} uppercase tracking-widest">
                                 ${isLate ? 'Overdue' : (deadlineDate ? 'Deadline: ' + formatDate(deadlineDate) : 'No deadline')}
                             </div>
-                            <div class="text-xs font-black ${statusColor}">
-                                ${statusText}
-                            </div>
+                            <div class="text-xs font-black ${statusColor}">${statusText}</div>
                         </div>
-
                         <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                              <i id="st-chevron-${t.id}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
                         </div>
                     </div>
                     
-                    ${images.length > 0 ? `
-                        <div class="grid grid-cols-${Math.min(3, images.length)} gap-2 mb-4">
-                            ${images.map(src => `
-                                <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img">
+                    ${legacyImages.length > 0 ? `
+                        <div class="grid grid-cols-${Math.min(3, legacyImages.length)} gap-2 mb-4">
+                            ${legacyImages.map(src => `
+                                <div class="${legacyImages.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
                                     <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
                                 </div>
                             `).join('')}
                         </div>
                     ` : ''}
 
+                    <div id="img-container-st-${t.id}">
+                        ${t.linkedImageIds && t.linkedImageIds.length > 0 ? `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>` : ''}
+                    </div>
+
                     <h4 class="font-black text-slate-800 text-lg line-clamp-2 leading-snug mt-auto">${t.question}</h4>
                 </div>
                 
                 <div id="st-body-${t.id}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
                       <div class="p-6 border-t border-slate-100">
-
                         <div class="text-slate-800 font-bold text-lg mb-6 whitespace-pre-wrap leading-relaxed border-b border-slate-200 pb-4">${t.question}</div>
-                        
                         ${isDone || isReview ? `
                             <div class="bg-white p-5 rounded-2xl border border-slate-200">
-                                <div class="font-bold text-slate-800 text-lg mb-2 font-mono leading-relaxed">
-    ${isDone ? getDiffHTML(t.studentAnswer, t.correctAnswer || t.studentAnswer) : t.studentAnswer}
-</div>
+                                <div class="font-bold text-slate-800 text-lg mb-2 font-mono leading-relaxed">${isDone ? getDiffHTML(t.studentAnswer, t.correctAnswer || t.studentAnswer) : t.studentAnswer}</div>
                                 <div class="h-px bg-slate-100 my-4"></div>
                                 <div class="flex items-center justify-between">
                                     <span class="text-xs font-bold text-slate-400 uppercase">Status</span>
@@ -2642,54 +2175,43 @@ function getReactionHTML(r) {
                            ` : `
                            <div class="space-y-4">
                                <textarea id="input-${t.id}" rows="3" class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-200 focus:border-blue-500 outline-none font-bold text-slate-800 transition-all resize-none" placeholder="Your answer..."></textarea>
-                                <button onclick="app.submitTask('${t.id}', '${t.correctAnswer}', ${t.deadline ? t.deadline.seconds : 9999999999}, '${t.answerType}')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">
-                                    Submit
-                                </button>
+                                <button onclick="app.submitTask('${t.id}', '${t.correctAnswer}', ${t.deadline ? t.deadline.seconds : 9999999999}, '${t.answerType}')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">Submit</button>
                            </div>
                            `}
                       </div>
                 </div>
-            </div>
-        `;
-    });
-    list.innerHTML = html;
-    lucide.createIcons();
-}
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                if (user.email) {
-                    // Teacher found
-                    window.app.showScreen('screen-teacher-dash');
-                    window.app.setTeacherTab('students');
-                } else {
-                    // Anonymous login (likely student)
-                    const sid = localStorage.getItem('student_id');
-                    if (sid) {
-                        try {
-                            const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', sid));
-                            if (snap.exists()) {
-                                currentStudentId = sid;
-                                currentStudentData = snap.data();
-
-                                document.getElementById('student-name-display').textContent = currentStudentData.name;
-                                document.getElementById('student-phrase-display').textContent = currentStudentData.phrase;
-                                window.app.showScreen('screen-student-dash');
-                                loadStudentTasks();
-
-                                // CHECK FOR INCOMING MESSAGES
-                                setTimeout(app.checkIncomingSupport, 1000);
-                            }
-                        } catch(e) { console.error("Auto-login error", e); }
-                    }
-                }
-            } else {
-                // If no one logged in, sign in anonymously to allow DB reads
-                signInAnonymously(auth).catch(() => {});
-            }
+            </div>`;
         });
-        
+        list.innerHTML = html;
         lucide.createIcons();
+        app.loadAllVisibleImages(tasks);
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            if (user.email) {
+                window.app.showScreen('screen-teacher-dash');
+                window.app.setTeacherTab('students');
+            } else {
+                const sid = localStorage.getItem('student_id');
+                if (sid) {
+                    try {
+                        const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', sid));
+                        if (snap.exists()) {
+                            currentStudentId = sid;
+                            currentStudentData = snap.data();
+                            document.getElementById('student-name-display').textContent = currentStudentData.name;
+                            document.getElementById('student-phrase-display').textContent = currentStudentData.phrase;
+                            window.app.showScreen('screen-student-dash');
+                            loadStudentTasks();
+                            setTimeout(app.checkIncomingSupport, 1000);
+                        }
+                    } catch(e) { console.error("Auto-login error", e); }
+                }
+            }
+        } else { signInAnonymously(auth).catch(() => {}); }
+    });
+    lucide.createIcons();
     </script>
 </body>
 </html>
