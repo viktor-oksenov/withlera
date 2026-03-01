@@ -792,51 +792,51 @@
     const teacherId = auth.currentUser.uid;
 
     try {
-        // 1. Загружаем имена всех учеников (чтобы знать, кто есть кто)
+        // 1. Load all student names to create a map (ID -> Name)
         const studentsSnap = await getDocs(query(getColPath('students'), where('teacherId', '==', teacherId)));
         const nameMap = {};
         studentsSnap.docs.forEach(d => nameMap[d.id] = d.data().name);
-        nameMap[teacherId] = "Вы (Учитель)";
+        nameMap[teacherId] = "You (Teacher)";
 
-        // 2. Загружаем последние реакции
+        // 2. Fetch latest reactions
         const qReactions = query(getColPath('reactions'), where('teacherId', '==', teacherId), orderBy('timestamp', 'desc'), limit(10));
         const reactionsSnap = await getDocs(qReactions);
 
-        // 3. Загружаем последние пожелания (support_messages)
+        // 3. Fetch latest support messages
         const qMessages = query(getColPath('support_messages'), where('teacherId', '==', teacherId), orderBy('timestamp', 'desc'), limit(10));
         const messagesSnap = await getDocs(qMessages);
 
-        // 4. Объединяем два списка в один и сортируем по времени (от новых к старым)
+        // 4. Combine both lists and sort by timestamp (newest first)
         const activity = [
             ...reactionsSnap.docs.map(d => ({ ...d.data(), type: 'reaction' })),
             ...messagesSnap.docs.map(d => ({ ...d.data(), type: 'message' }))
         ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 15);
 
         if (activity.length === 0) {
-            container.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">Активности пока нет</div>';
+            container.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm font-bold">No activity yet</div>';
             return;
         }
 
         container.innerHTML = activity.map(item => {
-            const fromName = nameMap[item.fromStudentId] || "Кто-то";
-            const toName = nameMap[item.toStudentId] || "кого-то";
+            const fromName = nameMap[item.fromStudentId] || "Someone";
+            const toName = nameMap[item.toStudentId] || "someone";
             
             if (item.type === 'reaction') {
-                // Рендерим блок с эмодзи
+                // Render Reaction Block
                 return `
                     <div class="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm animate-slide-up">
                         <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-xl shrink-0 shadow-inner">${item.emoji}</div>
                         <div class="flex-grow min-w-0">
                             <div class="text-[13px] leading-tight">
                                 <span class="font-black text-indigo-600">${fromName}</span> 
-                                <span class="text-slate-500 font-medium">отправил(а) ${item.emoji} для</span> 
+                                <span class="text-slate-500 font-medium">sent ${item.emoji} to</span> 
                                 <span class="font-black text-slate-800">${toName}</span>
                             </div>
                             <div class="text-[10px] text-slate-400 font-bold mt-0.5 uppercase tracking-tight">${formatRelativeTime(item.timestamp)}</div>
                         </div>
                     </div>`;
             } else {
-                // Рендерим блок с текстом пожелания
+                // Render Support Message Block
                 return `
                     <div class="flex items-center gap-3 p-3 bg-pink-50/50 rounded-2xl border border-pink-100 shadow-sm animate-slide-up">
                         <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center shrink-0 shadow-inner">
@@ -845,7 +845,7 @@
                         <div class="flex-grow min-w-0">
                             <div class="text-[13px] leading-tight">
                                 <span class="font-black text-pink-600">${fromName}</span> 
-                                <span class="text-slate-500 font-medium">написал(а) доброе слово для</span> 
+                                <span class="text-slate-500 font-medium">sent a kind word to</span> 
                                 <span class="font-black text-slate-800">${toName}</span>
                             </div>
                             <div class="bg-white/80 p-2 rounded-xl mt-2 text-[12px] italic text-slate-600 border border-pink-50 font-medium">
@@ -857,12 +857,16 @@
             }
         }).join('');
         
-        // Обновляем иконки Lucide (чтобы сердце появилось)
+        // Refresh Lucide icons
         lucide.createIcons();
         
     } catch (e) {
         console.error("Activity Error:", e);
-        // Если база запросит новый индекс для коллекции support_messages — перейди по ссылке в консоли
+        if (e.message.includes("index")) {
+            container.innerHTML = `<div class="text-[10px] p-4 bg-rose-50 text-rose-500 rounded-xl font-bold">
+                Index required. Check the F12 console and click the link to enable this query.
+            </div>`;
+        }
     }
 },
 
