@@ -787,41 +787,72 @@
             },
 
             loadTeacherActivity: async () => {
-            if (!auth.currentUser) return;
-            const container = document.getElementById('teacher-activity-list');
-            const teacherId = auth.currentUser.uid;
+    if (!auth.currentUser) return;
+    const container = document.getElementById('teacher-activity-list');
+    const teacherId = auth.currentUser.uid;
 
-            try {
-                // Запрашиваем 10 последних реакций именно этого класса
-                const q = query(
-                    getColPath('reactions'), 
-                    where('teacherId', '==', teacherId),
-                    orderBy('timestamp', 'desc'),
-                    limit(10)
-                );
+    try {
+        // 1. Сначала загружаем всех учеников, чтобы знать их имена по ID
+        const studentsSnap = await getDocs(query(
+            getColPath('students'), 
+            where('teacherId', '==', teacherId)
+        ));
+        
+        const nameMap = {};
+        studentsSnap.docs.forEach(d => {
+            nameMap[d.id] = d.data().name;
+        });
+        nameMap[teacherId] = "Вы (Учитель)"; // Добавляем вас в карту имен
 
-                const snap = await getDocs(q);
-                if (snap.empty) {
-                    container.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">No activity yet</div>';
-                    return;
-                }
+        // 2. Получаем 15 последних реакций
+        const q = query(
+            getColPath('reactions'), 
+            where('teacherId', '==', teacherId),
+            orderBy('timestamp', 'desc'),
+            limit(15)
+        );
 
-                container.innerHTML = snap.docs.map(doc => {
-                    const r = doc.data();
-                    return `
-                        <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl animate-slide-up border border-slate-100">
-                            <div class="text-2xl">${r.emoji}</div>
-                            <div class="flex-grow">
-                                <div class="text-xs font-black text-slate-800">New Reaction!</div>
-                                <div class="text-[10px] text-slate-400 font-bold">${formatRelativeTime(r.timestamp)}</div>
-                            </div>
-                        </div>`;
-                }).join('');
-            } catch (e) {
-                console.error("Activity Error:", e);
-                // Если тут будет ошибка про "Index" — см. Шаг 4
-            }
-        },
+        const snap = await getDocs(q);
+        if (snap.empty) {
+            container.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">Активности пока нет</div>';
+            return;
+        }
+
+        container.innerHTML = snap.docs.map(doc => {
+            const r = doc.data();
+            const fromName = nameMap[r.fromStudentId] || "Кто-то";
+            const toName = nameMap[r.toStudentId] || "кого-то";
+            
+            // Определяем текст действия
+            let actionText = `отправил(а) ${r.emoji} для`;
+            if (r.isTeacher) actionText = `похвалил(а) ${r.emoji}`;
+
+            return `
+                <div class="flex items-center gap-3 p-3 bg-white rounded-2xl animate-slide-up border border-slate-100 shadow-sm">
+                    <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-xl shrink-0 shadow-inner">
+                        ${r.emoji}
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <div class="text-[13px] leading-tight">
+                            <span class="font-black text-indigo-600">${fromName}</span>
+                            <span class="text-slate-500 font-medium"> ${actionText} </span>
+                            <span class="font-black text-slate-800">${toName}</span>
+                        </div>
+                        <div class="text-[10px] text-slate-400 font-bold mt-0.5 uppercase tracking-tight">
+                            ${formatRelativeTime(r.timestamp)}
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    } catch (e) {
+        console.error("Activity Error:", e);
+        if (e.message.includes("index")) {
+            container.innerHTML = `<div class="text-[10px] p-4 bg-rose-50 text-rose-500 rounded-xl">
+                Нужен индекс. Нажми F12 и перейди по ссылке в консоли.
+            </div>`;
+        }
+    }
+},
 
             submitTeacherAuth: () => {
                 if (window.app.teacherAuthMode === 'login') app.teacherLogin();
