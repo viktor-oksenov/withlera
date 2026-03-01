@@ -792,59 +792,77 @@
     const teacherId = auth.currentUser.uid;
 
     try {
-        // 1. Сначала загружаем всех учеников, чтобы знать их имена по ID
-        const studentsSnap = await getDocs(query(
-            getColPath('students'), 
-            where('teacherId', '==', teacherId)
-        ));
-        
+        // 1. Загружаем имена всех учеников (чтобы знать, кто есть кто)
+        const studentsSnap = await getDocs(query(getColPath('students'), where('teacherId', '==', teacherId)));
         const nameMap = {};
-        studentsSnap.docs.forEach(d => {
-            nameMap[d.id] = d.data().name;
-        });
-        nameMap[teacherId] = "Вы (Учитель)"; // Добавляем вас в карту имен
+        studentsSnap.docs.forEach(d => nameMap[d.id] = d.data().name);
+        nameMap[teacherId] = "Вы (Учитель)";
 
-        // 2. Получаем 15 последних реакций
-        const q = query(
-            getColPath('reactions'), 
-            where('teacherId', '==', teacherId),
-            orderBy('timestamp', 'desc'),
-            limit(15)
-        );
+        // 2. Загружаем последние реакции
+        const qReactions = query(getColPath('reactions'), where('teacherId', '==', teacherId), orderBy('timestamp', 'desc'), limit(10));
+        const reactionsSnap = await getDocs(qReactions);
 
-        const snap = await getDocs(q);
-        if (snap.empty) {
+        // 3. Загружаем последние пожелания (support_messages)
+        const qMessages = query(getColPath('support_messages'), where('teacherId', '==', teacherId), orderBy('timestamp', 'desc'), limit(10));
+        const messagesSnap = await getDocs(qMessages);
+
+        // 4. Объединяем два списка в один и сортируем по времени (от новых к старым)
+        const activity = [
+            ...reactionsSnap.docs.map(d => ({ ...d.data(), type: 'reaction' })),
+            ...messagesSnap.docs.map(d => ({ ...d.data(), type: 'message' }))
+        ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 15);
+
+        if (activity.length === 0) {
             container.innerHTML = '<div class="text-center text-slate-400 py-10 text-sm">Активности пока нет</div>';
             return;
         }
 
-        container.innerHTML = snap.docs.map(doc => {
-            const r = doc.data();
-            const fromName = nameMap[r.fromStudentId] || "Кто-то";
-            const toName = nameMap[r.toStudentId] || "кого-то";
+        container.innerHTML = activity.map(item => {
+            const fromName = nameMap[item.fromStudentId] || "Кто-то";
+            const toName = nameMap[item.toStudentId] || "кого-то";
             
-            // Определяем текст действия
-            let actionText = `sent ${r.emoji} to`;
-            if (r.isTeacher) actionText = `sent ${r.emoji}`;
-
-            return `
-                <div class="flex items-center gap-3 p-3 bg-white rounded-2xl animate-slide-up border border-slate-100 shadow-sm">
-                    <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-xl shrink-0 shadow-inner">
-                        ${r.emoji}
-                    </div>
-                    <div class="flex-grow min-w-0">
-                        <div class="text-[13px] leading-tight">
-                            <span class="font-black text-indigo-600">${fromName}</span>
-                            <span class="text-slate-500 font-medium"> ${actionText} </span>
-                            <span class="font-black text-slate-800">${toName}</span>
+            if (item.type === 'reaction') {
+                // Рендерим блок с эмодзи
+                return `
+                    <div class="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100 shadow-sm animate-slide-up">
+                        <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-xl shrink-0 shadow-inner">${item.emoji}</div>
+                        <div class="flex-grow min-w-0">
+                            <div class="text-[13px] leading-tight">
+                                <span class="font-black text-indigo-600">${fromName}</span> 
+                                <span class="text-slate-500 font-medium">отправил(а) ${item.emoji} для</span> 
+                                <span class="font-black text-slate-800">${toName}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-bold mt-0.5 uppercase tracking-tight">${formatRelativeTime(item.timestamp)}</div>
                         </div>
-                        <div class="text-[10px] text-slate-400 mt-0.5 uppercase tracking-tight">
-                            ${formatRelativeTime(r.timestamp)}
+                    </div>`;
+            } else {
+                // Рендерим блок с текстом пожелания
+                return `
+                    <div class="flex items-center gap-3 p-3 bg-pink-50/50 rounded-2xl border border-pink-100 shadow-sm animate-slide-up">
+                        <div class="w-10 h-10 rounded-full bg-pink-100 text-pink-500 flex items-center justify-center shrink-0 shadow-inner">
+                            <i data-lucide="heart" class="w-5 h-5 fill-current"></i>
                         </div>
-                    </div>
-                </div>`;
+                        <div class="flex-grow min-w-0">
+                            <div class="text-[13px] leading-tight">
+                                <span class="font-black text-pink-600">${fromName}</span> 
+                                <span class="text-slate-500 font-medium">написал(а) доброе слово для</span> 
+                                <span class="font-black text-slate-800">${toName}</span>
+                            </div>
+                            <div class="bg-white/80 p-2 rounded-xl mt-2 text-[12px] italic text-slate-600 border border-pink-50 font-medium">
+                                "${item.message}"
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-bold mt-1 uppercase tracking-tight">${formatRelativeTime(item.timestamp)}</div>
+                        </div>
+                    </div>`;
+            }
         }).join('');
+        
+        // Обновляем иконки Lucide (чтобы сердце появилось)
+        lucide.createIcons();
+        
     } catch (e) {
+        console.error("Activity Error:", e);
+        // Если база запросит новый индекс для коллекции support_messages — перейди по ссылке в консоли
     }
 },
 
