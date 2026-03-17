@@ -1791,10 +1791,10 @@ studentLogin: async () => {
             },
 
             // --- LAZY IMAGE LOADING ---
-            loadAllVisibleImages: async (items) => {
+            loadAllVisibleImages: async (items, isStudentMode = false) => {
                  for (const item of items) {
                      // Determine container ID based on whether it is a group (teacher) or task (student)
-                     const containerId = item.groupId ? `img-container-${item.groupId}` : `img-container-st-${item.id}`;
+                     const containerId = isStudentMode ? `img-container-st-${item.id}` : `img-container-${item.groupId || item.id}`;
                      const container = document.getElementById(containerId);
                      
                      if (container && item.linkedImageIds && item.linkedImageIds.length > 0) {
@@ -2386,7 +2386,7 @@ const draftsSnap = await getDocs(qDrafts);
         });
         list.innerHTML = html;
         lucide.createIcons();
-        app.loadAllVisibleImages(tasks);
+        app.loadAllVisibleImages(tasks, true); // <--- ИСПРАВЛЕНИЕ ЗДЕСЬ
     }
 
     onAuthStateChanged(auth, async (user) => {
