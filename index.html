@@ -43,6 +43,13 @@
             justify-content: center;
         }
 
+        .main-content h4, 
+.main-content div, 
+.main-content p {
+    word-break: break-all; /* Это заставит любые длинные ссылки переноситься на новую строку */
+    overflow-wrap: break-word;
+}
+
         body { font-family: 'Inter', sans-serif; }
         body.modal-open { overflow: hidden; }
         .hidden { display: none !important; }
@@ -1980,7 +1987,7 @@ const draftsSnap = await getDocs(qDrafts);
                            ${g.linkedImageIds && g.linkedImageIds.length > 0 ? `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>` : ''}
                         </div>
 
-                        <h4 class="font-black text-slate-800 text-lg mb-4 whitespace-pre-wrap line-clamp-2">${g.question}</h4>
+                        <h4 class="font-black text-slate-800 text-lg mb-4 whitespace-pre-wrap break-words line-clamp-2">${g.question}</h4>
                         
                         <div class="flex items-center justify-between mt-auto">
                             <div class="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden mr-4 flex-1">
@@ -2359,7 +2366,7 @@ const draftsSnap = await getDocs(qDrafts);
                         ${t.linkedImageIds && t.linkedImageIds.length > 0 ? `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>` : ''}
                     </div>
 
-                    <h4 class="font-black text-slate-800 text-lg line-clamp-2 leading-snug mt-auto">${t.question}</h4>
+                    <h4 class="font-black text-slate-800 text-lg line-clamp-2 leading-snug mt-auto break-all">${t.question}</h4>
                 </div>
                 
                 <div id="st-body-${t.id}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
