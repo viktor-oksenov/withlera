@@ -126,7 +126,7 @@
         }
     </style>
 </head>
-<body class="bg-[#F8FAFC] text-slate-900 min-h-screen font-medium">
+<body class="bg-[#F1F5F9] text-slate-900 min-h-screen font-medium">
 
     <div id="notification-container" class="fixed top-20 right-4 md:top-6 md:right-6 z-[200] flex flex-col gap-3 w-[calc(100%-2rem)] md:w-auto"></div>
 
@@ -349,7 +349,7 @@
         </header>
 
         <!-- Desktop Sidebar -->
-        <aside class="desktop-sidebar w-80 bg-white border-r border-slate-100 p-8 flex flex-col shrink-0 overflow-y-auto">
+        <aside class="desktop-sidebar w-80 bg-white rounded-[2.5rem] border border-slate-200/70 shadow-xl shadow-slate-200/60 p-7 flex flex-col shrink-0 overflow-y-auto my-4 ml-4 md:my-5 md:ml-5 h-[calc(100vh-2rem)] md:h-[calc(100vh-2.5rem)]">
             <div class="flex items-center gap-3 mb-12 px-2 font-black text-2xl text-indigo-600 italic">
                 <div class="bg-indigo-600 p-2 rounded-lg text-white not-italic shadow-lg shadow-indigo-100">
                     <i data-lucide="graduation-cap" class="w-5 h-5"></i>
@@ -420,87 +420,97 @@
                         <i data-lucide="plus-circle" class="w-6 h-6"></i> New Task
                     </button>
                 </div>
-                <div id="task-creation-wizard" class="hidden mb-12">
-                    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
-                        <div class="bg-slate-900 px-6 py-5 md:px-10 md:py-6 flex justify-between items-center">
-                            <h3 id="wizard-title" class="text-white font-bold">Task Builder</h3>
-                            <button onclick="app.closeNewTaskForm()" class="text-slate-400 hover:text-white transition-colors"><i data-lucide="x" class="w-6 h-6"></i></button>
-                        </div>
-                        <div class="p-6 md:p-10">
-                            <div class="flex items-center justify-between mb-10 max-w-md mx-auto relative">
-                                <div class="absolute h-1 bg-slate-100 top-1/2 left-0 right-0 -translate-y-1/2 z-0"></div>
-                                <div id="step-line-1" class="absolute h-1 bg-indigo-500 top-1/2 left-0 w-0 -translate-y-1/2 z-0 transition-all duration-500"></div>
-                                <div class="step-node active relative z-10 w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center font-black shadow-md" id="node-1">1</div>
-                                <div class="step-node relative z-10 w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center font-black shadow-md" id="node-2">2</div>
-                                <div class="step-node relative z-10 w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center font-black shadow-md" id="node-3">3</div>
+                <div id="task-creation-wizard" class="hidden mb-8 max-w-xl mx-auto">
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200/80 overflow-hidden">
+                        <!-- Светлая стильная шапка вместо чёрной -->
+                        <div class="px-6 py-4 flex justify-between items-center border-b border-slate-100 bg-slate-50/50">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </div>
+                                <h3 id="wizard-title" class="text-slate-800 font-extrabold text-base">Task Builder</h3>
                             </div>
-                            <div id="wizard-step-1" class="space-y-6 max-w-xl mx-auto">
-                                <textarea id="task-text" rows="4" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-medium text-lg resize-none" placeholder="What needs to be done?"></textarea>
-                                
-                                <!-- Image Input Section -->
-                                <div>
-                                    <label class="block text-sm font-bold text-slate-400 mb-2 ml-2 uppercase tracking-wide">Images (Max 3)</label>
-                                    
-                                    <div class="flex gap-2 mb-4">
-                                        <input type="text" id="new-image-url" class="flex-1 px-6 py-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 outline-none font-medium truncate" placeholder="Paste URL and click Add">
-                                        
-                                        <button onclick="app.addImageFromUrl()" class="px-6 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition-colors">Add</button>
+                            <button onclick="app.closeNewTaskForm()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-xl hover:bg-slate-100 transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Компактный индикатор шагов -->
+                            <div class="flex items-center justify-between mb-6 max-w-xs mx-auto relative">
+                                <div class="absolute h-1 bg-slate-100 top-1/2 left-0 right-0 -translate-y-1/2 z-0"></div>
+                                <div id="step-line-1" class="absolute h-1 bg-indigo-600 top-1/2 left-0 w-0 -translate-y-1/2 z-0 transition-all duration-300"></div>
+                                <div class="step-node active relative z-10 w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center font-black text-xs shadow-sm" id="node-1">1</div>
+                                <div class="step-node relative z-10 w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center font-black text-xs shadow-sm" id="node-2">2</div>
+                                <div class="step-node relative z-10 w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center font-black text-xs shadow-sm" id="node-3">3</div>
+                            </div>
 
-                                        <label class="px-5 py-4 bg-slate-100 rounded-2xl cursor-pointer hover:bg-slate-200 transition-colors flex-shrink-0" title="Upload Image">
-                                            <i data-lucide="image-plus" class="w-6 h-6 text-slate-500"></i>
-                                            <input type="file" id="task-image-file" accept="image/*" class="hidden" onchange="app.handleImageUpload(this)">
+                            <!-- Шаг 1 -->
+                            <div id="wizard-step-1" class="space-y-4">
+                                <textarea id="task-text" rows="3" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-medium text-base resize-none" placeholder="What needs to be done?"></textarea>
+                                
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-2 ml-1 uppercase tracking-wide">Images (Max 3)</label>
+                                    
+                                    <div class="flex gap-2 mb-3">
+                                        <input type="text" id="new-image-url" class="flex-1 px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 outline-none text-sm font-medium truncate" placeholder="Paste image URL">
+                                        
+                                        <button onclick="app.addImageFromUrl()" class="px-5 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors">Add</button>
+
+                                        <label class="px-4 py-3 bg-slate-100 rounded-xl cursor-pointer hover:bg-slate-200 transition-colors flex-shrink-0 flex items-center justify-center" title="Upload Image">
+                                            <i data-lucide="image-plus" class="w-5 h-5 text-slate-600"></i>
+                                            <input type="file" id="task-image-file" accept="image/*" multiple class="hidden" onchange="app.handleImageUpload(this)">
                                         </label>
                                     </div>
                                     
-                                    <!-- Grid for active images -->
-                                    <div id="active-images-list" class="grid grid-cols-3 gap-3"></div>
+                                    <div id="active-images-list" class="grid grid-cols-3 gap-2"></div>
                                 </div>
                                 
-                                <!-- Answer Type Selection -->
-                                <div class="bg-slate-100 p-1.5 rounded-2xl flex gap-1">
+                                <div class="bg-slate-100 p-1 rounded-xl flex gap-1">
                                     <label class="flex-1 cursor-pointer">
                                         <input type="radio" name="answerType" value="mixed" class="peer sr-only" checked onchange="app.updateAnswerTypeUI()">
-                                        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
+                                        <div class="py-2.5 px-2 rounded-lg text-center text-xs font-bold text-slate-500 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-1.5">
                                             <span>✨</span> Auto Check
                                         </div>
                                     </label>
 
                                     <label class="flex-1 cursor-pointer">
                                         <input type="radio" name="answerType" value="manual" class="peer sr-only" onchange="app.updateAnswerTypeUI()">
-                                        <div class="py-3 px-2 rounded-xl text-center text-sm font-bold text-slate-400 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-2">
+                                        <div class="py-2.5 px-2 rounded-lg text-center text-xs font-bold text-slate-500 peer-checked:bg-white peer-checked:text-indigo-600 peer-checked:shadow-sm transition-all flex items-center justify-center gap-1.5">
                                             <span>👁️</span> Manual Review
                                         </div>
                                     </label>
                                 </div>
 
-                                <input type="text" id="task-answer" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-bold" placeholder="Correct Answer (for reference)">
-                                <button onclick="app.nextWizardStep(2)" class="w-full py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Next</button>
+                                <input type="text" id="task-answer" class="w-full px-5 py-3.5 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-bold text-sm" placeholder="Correct Answer (for reference)">
+                                <button onclick="app.nextWizardStep(2)" class="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-100">Next</button>
                             </div>
-                            <div id="wizard-step-2" class="hidden space-y-6 max-w-2xl mx-auto">
-                                <div id="student-checklist" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1"></div>
-                                <div class="flex gap-3">
-                                    <button onclick="app.nextWizardStep(1)" class="flex-1 py-5 bg-slate-100 text-slate-600 rounded-2xl font-bold">Back</button>
-                                    <button onclick="app.nextWizardStep(3)" class="flex-[2] py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">Next</button>
+
+                            <!-- Шаг 2 -->
+                            <div id="wizard-step-2" class="hidden space-y-4">
+                                <div id="student-checklist" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[260px] overflow-y-auto pr-1"></div>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="app.nextWizardStep(1)" class="flex-1 py-3.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Back</button>
+                                    <button onclick="app.nextWizardStep(3)" class="flex-[2] py-3.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-colors shadow-md shadow-indigo-100">Next</button>
                                 </div>
                             </div>
-                            <div id="wizard-step-3" class="hidden space-y-8 max-w-xl mx-auto">
-                                <div class="space-y-6">
+
+                            <!-- Шаг 3 -->
+                            <div id="wizard-step-3" class="hidden space-y-5">
+                                <div class="space-y-4">
                                     <div>
-                                        <label class="block text-sm font-bold text-slate-400 mb-2 ml-2 uppercase tracking-wide">Publish Date</label>
-                                        <div class="relative">
-                                            <input type="text" onfocus="(this.type='datetime-local')" onblur="if(!this.value)this.type='text'" id="task-publish-date" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 font-bold text-slate-700" placeholder="Select date and time">
-                                            <div class="text-xs text-slate-400 mt-2 ml-2">Leave empty to publish now</div>
-                                        </div>
+                                        <label class="block text-xs font-bold text-slate-400 mb-1.5 ml-1 uppercase tracking-wide">Publish Date</label>
+                                        <input type="text" onfocus="(this.type='datetime-local')" onblur="if(!this.value)this.type='text'" id="task-publish-date" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 font-bold text-slate-700 text-sm" placeholder="Leave empty to publish now">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-bold text-slate-400 mb-2 ml-2 uppercase tracking-wide">Deadline</label>
-                                        <input type="text" onfocus="(this.type='datetime-local')" onblur="if(!this.value)this.type='text'" id="task-deadline" class="w-full px-6 py-5 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 font-bold text-slate-700" placeholder="Select date and time (does not affect grading)">
+                                        <label class="block text-xs font-bold text-slate-400 mb-1.5 ml-1 uppercase tracking-wide">Deadline</label>
+                                        <input type="text" onfocus="(this.type='datetime-local')" onblur="if(!this.value)this.type='text'" id="task-deadline" class="w-full px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 font-bold text-slate-700 text-sm" placeholder="Select deadline">
                                     </div>
                                 </div>
                                 
-                                <div class="flex gap-3 pt-4">
-                                    <button onclick="app.nextWizardStep(2)" class="flex-1 py-5 bg-slate-100 text-slate-600 rounded-2xl font-bold">Back</button>
-                                    <button onclick="app.assignTask()" class="flex-[2] py-5 bg-emerald-500 text-white rounded-2xl font-black shadow-xl">Publish</button>
+                                <div class="flex gap-2 pt-2">
+                                    <button onclick="app.nextWizardStep(2)" class="flex-1 py-3.5 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">Back</button>
+                                    <button onclick="app.assignTask()" class="flex-[2] py-3.5 bg-emerald-600 text-white rounded-xl font-bold text-sm hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-100">Publish</button>
                                 </div>
                             </div>
                         </div>
@@ -557,35 +567,57 @@
     </div>
 
     <!-- STUDENT DASHBOARD -->
-    <div id="screen-student-dash" class="screen hidden min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row">
+    <div id="screen-student-dash" class="screen hidden min-h-screen md:h-screen md:overflow-hidden flex flex-col md:flex-row bg-[#F1F5F9]">
         
         <!-- MOBILE TOP HEADER (Fixed) -->
         <header class="md:hidden mobile-header-glass border-b border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
             <h1 id="mobile-student-title" class="font-black text-2xl text-slate-800">My Lessons</h1>
         </header>
 
-        <aside class="desktop-sidebar w-80 bg-white border-r border-slate-100 p-8 flex flex-col shrink-0 overflow-y-auto">
-            <div class="flex items-center gap-3 mb-12 font-black text-2xl uppercase tracking-widest text-blue-600 italic"><i data-lucide="backpack"></i> With Lera</div>
-            <nav class="flex-grow space-y-3">
-                <button onclick="app.setStudentTab('lessons')" id="st-tab-btn-lessons" class="w-full px-6 py-4 rounded-2xl font-black flex items-center gap-4 shadow-sm student-active-tab transition-all hover:bg-blue-50">
-                    <i data-lucide="book-open"></i> My Lessons
+        <aside class="desktop-sidebar w-80 bg-white rounded-[2.5rem] border border-slate-200/70 shadow-xl shadow-slate-200/60 p-7 flex flex-col shrink-0 overflow-y-auto my-4 ml-4 md:my-5 md:ml-5 h-[calc(100vh-2rem)] md:h-[calc(100vh-2.5rem)]">
+            <!-- Unified Brand Header -->
+            <div class="flex items-center gap-3 mb-10 px-2 font-black text-2xl text-blue-600">
+                <div class="bg-blue-600 p-2.5 rounded-2xl text-white shadow-md shadow-blue-100 flex items-center justify-center">
+                    <i data-lucide="backpack" class="w-5 h-5"></i>
+                </div>
+                With Lera
+            </div>
+
+            <!-- Clean Navigation -->
+            <nav class="flex-grow space-y-2">
+                <button onclick="app.setStudentTab('lessons')" id="st-tab-btn-lessons" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold transition-all student-active-tab">
+                    <i data-lucide="book-open" class="w-5 h-5"></i> Lessons
                 </button>
-                <button onclick="app.setStudentTab('quests')" id="st-tab-btn-quests" class="w-full px-6 py-4 rounded-2xl font-black flex items-center gap-4 text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600">
-                    <i data-lucide="target"></i> Quests
+                <button onclick="app.setStudentTab('quests')" id="st-tab-btn-quests" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600">
+                    <i data-lucide="target" class="w-5 h-5"></i> Quests
                 </button>
-                <button onclick="app.setStudentTab('rating')" id="st-tab-btn-rating" class="w-full px-6 py-4 rounded-2xl font-black flex items-center gap-4 text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600">
-                    <i data-lucide="trophy"></i> Leaderboard
+                <button onclick="app.setStudentTab('rating')" id="st-tab-btn-rating" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600">
+                    <i data-lucide="trophy" class="w-5 h-5"></i> Leaderboard
                 </button>
             </nav>
-            <div class="mt-auto pt-8 border-t border-slate-50">
-                <div class="bg-blue-50 rounded-[2rem] p-6 mb-8 border border-blue-100">
-                    <p id="student-name-display" class="font-black text-slate-900 truncate text-lg">...</p>
-                    <p id="student-phrase-display" class="text-xs text-blue-700 opacity-60 font-mono mb-4"></p>
-                    <div class="bg-white px-5 py-3 rounded-2xl flex justify-between items-center shadow-sm">
-                        <span id="student-total-score" class="font-black text-blue-700 text-2xl">0</span>
+
+            <!-- Minimalist Profile Dock -->
+            <div class="mt-auto pt-6 border-t border-slate-100">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 mb-2">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-sm shadow-blue-200">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <p id="student-name-display" class="font-extrabold text-slate-800 truncate text-sm">...</p>
+                                <span class="bg-blue-100/70 text-blue-700 px-2 py-0.5 rounded-lg text-xs font-black shrink-0">
+                                    <span id="student-total-score">0</span> pts
+                                </span>
+                            </div>
+                            <p id="student-phrase-display" class="text-[11px] text-slate-400 font-mono truncate mt-0.5"></p>
+                        </div>
                     </div>
                 </div>
-                <button onclick="app.logout()" class="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-slate-400 font-bold">Logout</button>
+
+                <button onclick="app.logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50 font-bold text-sm transition-colors">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                </button>
             </div>
         </aside>
         
@@ -604,7 +636,7 @@
             </button>
         </nav>
 
-        <main class="main-content flex-grow p-6 md:p-12 overflow-y-auto bg-[#F8FAFC]">
+        <main class="main-content flex-grow p-6 md:p-12 overflow-y-auto">
             <!-- STUDENT TAB: LESSONS -->
             <section id="tab-student-lessons">
                 <h2 class="text-3xl md:text-4xl font-black mb-8 text-slate-800 md:block hidden">Lessons</h2>
@@ -756,8 +788,8 @@
                 document.getElementById('screen-main').classList.add('hidden');
                 document.getElementById(id).classList.remove('hidden');
                 if (id === 'screen-teacher-dash' || id === 'screen-student-dash') {
-                    document.documentElement.style.backgroundColor = '#F8FAFC';
-                    document.body.style.backgroundColor = '#F8FAFC';
+                    document.documentElement.style.backgroundColor = '#F1F5F9';
+                    document.body.style.backgroundColor = '#F1F5F9';
                 } else {
                     document.documentElement.style.backgroundColor = '#ffffff';
                     document.body.style.backgroundColor = '#ffffff';
@@ -1002,9 +1034,10 @@
 
             openNewTaskForm: (id = null, type = 'draft') => {
                 document.getElementById('task-creation-wizard').classList.remove('hidden');
+
                 editingDraftId = null;
                 editingGroupId = null;
-                currentDraftImages = []; 
+                currentDraftImages = [];
 
                 document.getElementById('task-text').value = '';
                 document.getElementById('task-answer').value = '';
@@ -1109,63 +1142,74 @@
                 app.renderImagePreviews();
             },
 
-            handleImageUpload: (input) => {
-                const file = input.files[0];
-                if (!file) return;
-                if (currentDraftImages.length >= 3) {
+            handleImageUpload: async (input) => {
+                const files = Array.from(input.files || []);
+                if (!files.length) return;
+                
+                const currentCount = currentDraftImages.length;
+                if (currentCount >= 3) {
                     notify("Max 3 images allowed", "error");
                     input.value = '';
                     return;
                 }
-                if (file.size > 20 * 1024 * 1024) {
-                    notify("File too huge (>20MB)", "error");
-                    input.value = '';
-                    return;
+
+                const availableSlots = 3 - currentCount;
+                const filesToUpload = files.slice(0, availableSlots);
+                
+                if (files.length > availableSlots) {
+                    notify(`Only ${availableSlots} image(s) added (max 3 allowed)`, "info");
                 }
                 notify("Compressing...", "info");
 
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // AGGRESSIVE COMPRESSION SETTINGS
-                        let MAX_DIM = 800; // Smaller max dimension
-                        let quality = 0.6; // Lower quality for speed
+                for (const file of filesToUpload) {
+                    if (file.size > 20 * 1024 * 1024) {
+                        notify(`File ${file.name} too huge (>20MB)`, "error");
+                        continue;
+                    }
 
-                        const compress = () => {
-                            let currW = width;
-                            let currH = height;
-                            if (currW > currH) {
-                                if (currW > MAX_DIM) { currH *= MAX_DIM / currW; currW = MAX_DIM; }
-                            } else {
-                                if (currH > MAX_DIM) { currW *= MAX_DIM / currH; currH = MAX_DIM; }
-                            }
-                            canvas.width = currW;
-                            canvas.height = currH;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, currW, currH);
-                            const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                            
-                            // Ensure it's under 300KB
-                            if (dataUrl.length > 400000 && MAX_DIM > 400) {
-                                MAX_DIM = Math.floor(MAX_DIM * 0.8);
-                                quality = Math.max(0.5, quality - 0.1);
+                    await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                const canvas = document.createElement('canvas');
+                                let width = img.width;
+                                let height = img.height;
+                                let MAX_DIM = 800;
+                                let quality = 0.6;
+
+                                const compress = () => {
+                                    let currW = width;
+                                    let currH = height;
+                                    if (currW > currH) {
+                                        if (currW > MAX_DIM) { currH *= MAX_DIM / currW; currW = MAX_DIM; }
+                                    } else {
+                                        if (currH > MAX_DIM) { currH *= MAX_DIM / currH; currH = MAX_DIM; }
+                                    }
+                                    canvas.width = currW;
+                                    canvas.height = currH;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.drawImage(img, 0, 0, currW, currH);
+                                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                                    
+                                    if (dataUrl.length > 400000 && MAX_DIM > 400) {
+                                        MAX_DIM = Math.floor(MAX_DIM * 0.8);
+                                        quality = Math.max(0.5, quality - 0.1);
+                                        compress();
+                                    } else {
+                                        currentDraftImages.push(dataUrl);
+                                        resolve();
+                                    }
+                                };
                                 compress();
-                            } else {
-                                currentDraftImages.push(dataUrl);
-                                app.renderImagePreviews();
-                                notify("Image added!", "success");
-                            }
+                            };
+                            img.src = e.target.result;
                         };
-                        compress();
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+                        reader.readAsDataURL(file);
+                    });
+                }
+                app.renderImagePreviews();
+                notify("Images added!", "success");
                 input.value = '';
             },
 
@@ -1206,16 +1250,11 @@
                              notify("Failed to save an image", "error");
                          }
                     } else if (img.startsWith('http')) {
-                        // It's a URL, we can't really store it in imageIds easily unless we distinguish.
-                        // For mixed content, we might need a richer structure.
-                        // But for simplicity in this file-based app: treat external URLs as separate if needed, 
-                        // OR just fetch them, convert to base64 and save? 
-                        // Let's assume for now we only support the separate collection for uploaded content.
-                        // If it's a URL, we can't use 'imageIds' logic directly unless we store {type: 'url', val: ...}
-                        // Fallback: If user used URL, we might still have to use legacy imageUrls OR save a doc with type: 'url'
                         const docRef = await addDoc(getColPath('images'), { url: img, createdAt: Date.now() });
                         imageIds.push(docRef.id);
                         window.appImageCache[docRef.id] = img;
+                    } else if (img && typeof img === 'string') {
+                        imageIds.push(img);
                     }
                 }
                 return imageIds;
@@ -1797,35 +1836,50 @@ studentLogin: async () => {
                 window.location.reload(); 
             },
 
-            // --- LAZY IMAGE LOADING ---
-            loadAllVisibleImages: async (items, isStudentMode = false) => {
-                 for (const item of items) {
-                     // Determine container ID based on whether it is a group (teacher) or task (student)
+            // --- LAZY IMAGE LOADING (OBSERVER + PARALLEL) ---
+            loadAllVisibleImages: (items, isStudentMode = false) => {
+                 if (!window.taskImageObserver) {
+                     window.taskImageObserver = new IntersectionObserver((entries, observer) => {
+                         entries.forEach(async (entry) => {
+                             if (!entry.isIntersecting) return;
+                             const container = entry.target;
+                             observer.unobserve(container);
+
+                             const rawIds = container.dataset.imageIds;
+                             if (!rawIds) return;
+                             const imageIds = JSON.parse(rawIds);
+
+                             // Параллельная загрузка картинок внутри карточки (в 5 раз быстрее)
+                             const images = (await Promise.all(
+                                 imageIds.map(id => app.fetchImageById(id))
+                             )).filter(Boolean);
+
+                             if (images.length > 0) {
+                                 const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+                                 container.innerHTML = `
+                                     <div class="grid ${gridColsClass} gap-2 mb-4">
+                                         ${images.map(src => `
+                                             <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
+                                                 <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
+                                             </div>
+                                         `).join('')}
+                                     </div>
+                                 `;
+                             } else {
+                                 container.innerHTML = '';
+                             }
+                         });
+                     }, { rootMargin: '200px 0px' });
+                 }
+
+                 items.forEach(item => {
                      const containerId = isStudentMode ? `img-container-st-${item.id}` : `img-container-${item.groupId || item.id}`;
                      const container = document.getElementById(containerId);
-                     
-                     if (container && item.linkedImageIds && item.linkedImageIds.length > 0) {
-                         const images = [];
-                         for(const id of item.linkedImageIds) {
-                             const imgData = await app.fetchImageById(id);
-                             if(imgData) images.push(imgData);
-                         }
-                         
-                         if(images.length > 0) {
-                             container.innerHTML = `
-                                <div class="grid grid-cols-${Math.min(3, images.length)} gap-2 mb-4 animate-slide-up">
-                                    ${images.map(src => `
-                                        <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
-                                            <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
-                                        </div>
-                                    `).join('')}
-                                </div>
-                             `;
-                         } else {
-                             container.innerHTML = '';
-                         }
+                     if (container && container.querySelector('.img-skeleton')) {
+                         container.dataset.imageIds = JSON.stringify(item.linkedImageIds || []);
+                         window.taskImageObserver.observe(container);
                      }
-                 }
+                 });
             }
         };
 
@@ -2308,92 +2362,127 @@ const draftsSnap = await getDocs(qDrafts);
         lucide.createIcons();
     }
 
-    async function loadStudentTasks() {
-        if (!currentStudentId) return;
-        const q = query(getColPath('tasks'), where('studentId', '==', currentStudentId));
-        const snap = await getDocs(q);
-        const tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
-        tasks.sort((a, b) => b.createdAt - a.createdAt);
-        const taskScore = tasks.reduce((acc, t) => acc + (t.score || 0), 0);
-        const bonus = currentStudentData.bonusPoints || 0;
-        document.getElementById('student-total-score').textContent = taskScore + bonus;
-        
-        const list = document.getElementById('student-tasks-list');
-        if (tasks.length === 0) { list.innerHTML = '<div class="col-span-full text-center text-slate-400 py-20 font-bold">No tasks yet</div>'; return; }
+    let isTasksLoading = false;
 
-        let html = '';
-        tasks.forEach(t => {
-            const isDone = t.status === 'completed';
-            const isReview = t.status === 'review';
-            const isScheduled = t.publishAt && t.publishAt.toMillis() > Date.now();
-            if (isScheduled) return;
-            const deadlineDate = t.deadline ? t.deadline.toDate() : null;
-            const isLate = deadlineDate && (Date.now() > deadlineDate.getTime()) && !isDone && !isReview;
-            let legacyImages = [];
-            if (t.imageUrls && Array.isArray(t.imageUrls)) legacyImages = t.imageUrls;
-            else if (t.imageUrl) legacyImages = [t.imageUrl];
-            let statusText = 'Pending';
-            let statusColor = 'text-slate-300';
-            if (isDone) { statusColor = 'text-emerald-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="w-4 h-4"></i> ${t.score} pts.</span>`; } 
-            else if (isReview) { statusColor = 'text-amber-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Under Review</span>`; }
+    function renderTaskImagesHtml(linkedImageIds, legacyImages = []) {
+        if (legacyImages && legacyImages.length > 0) {
+            const gridColsClass = legacyImages.length === 1 ? 'grid-cols-1' : (legacyImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+            return `
+                <div class="grid ${gridColsClass} gap-2 mb-4">
+                    ${legacyImages.map(src => `
+                        <div class="${legacyImages.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
+                            <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
 
-            html += `
-            <div id="st-card-${t.id}" class="bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-500 overflow-hidden flex flex-col h-full group">
-                <div class="cursor-pointer px-6 py-5 flex flex-col flex-grow" onclick="app.toggleStudentTaskAccordion('${t.id}')">
-                    <div class="flex justify-between items-center mb-4">
-                        <div class="flex flex-col gap-1">
-                            <div class="text-[10px] ${isLate ? 'text-rose-500 font-bold' : 'text-slate-400 font-black'} uppercase tracking-widest">
-                                ${isLate ? 'Overdue' : (deadlineDate ? 'Deadline: ' + formatDate(deadlineDate) : 'No deadline')}
+        if (linkedImageIds && linkedImageIds.length > 0) {
+            const allCached = linkedImageIds.every(id => window.appImageCache[id]);
+            if (allCached) {
+                const images = linkedImageIds.map(id => window.appImageCache[id]).filter(Boolean);
+                const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+                return `
+                    <div class="grid ${gridColsClass} gap-2 mb-4">
+                        ${images.map(src => `
+                            <div class="${images.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
+                                <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
                             </div>
-                            <div class="text-xs font-black ${statusColor}">${statusText}</div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            return `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>`;
+        }
+
+        return '';
+    }
+
+    async function loadStudentTasks() {
+        if (!currentStudentId || isTasksLoading) return;
+        isTasksLoading = true;
+
+        try {
+            const q = query(getColPath('tasks'), where('studentId', '==', currentStudentId));
+            const snap = await getDocs(q);
+            const tasks = snap.docs.map(d => ({id: d.id, ...d.data()}));
+            tasks.sort((a, b) => b.createdAt - a.createdAt);
+            const taskScore = tasks.reduce((acc, t) => acc + (t.score || 0), 0);
+            const bonus = currentStudentData.bonusPoints || 0;
+            document.getElementById('student-total-score').textContent = taskScore + bonus;
+            
+            const list = document.getElementById('student-tasks-list');
+            if (tasks.length === 0) { list.innerHTML = '<div class="col-span-full text-center text-slate-400 py-20 font-bold">No tasks yet</div>'; return; }
+
+            let html = '';
+            tasks.forEach(t => {
+                const isDone = t.status === 'completed';
+                const isReview = t.status === 'review';
+                const isScheduled = t.publishAt && t.publishAt.toMillis() > Date.now();
+                if (isScheduled) return;
+                const deadlineDate = t.deadline ? t.deadline.toDate() : null;
+                const isLate = deadlineDate && (Date.now() > deadlineDate.getTime()) && !isDone && !isReview;
+                let legacyImages = [];
+                if (t.imageUrls && Array.isArray(t.imageUrls)) legacyImages = t.imageUrls;
+                else if (t.imageUrl) legacyImages = [t.imageUrl];
+                let statusText = 'Pending';
+                let statusColor = 'text-slate-300';
+                if (isDone) { statusColor = 'text-emerald-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="check-circle-2" class="w-4 h-4"></i> ${t.score} pts.</span>`; } 
+                else if (isReview) { statusColor = 'text-amber-500'; statusText = `<span class="flex items-center gap-1"><i data-lucide="clock" class="w-4 h-4"></i> Under Review</span>`; }
+
+                html += `
+                <div id="st-card-${t.id}" class="bg-white rounded-[2rem] border border-slate-100 shadow-sm transition-all duration-500 overflow-hidden flex flex-col h-full group">
+                    <div class="cursor-pointer px-6 py-5 flex flex-col flex-grow" onclick="app.toggleStudentTaskAccordion('${t.id}')">
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex flex-col gap-1">
+                                <div class="text-[10px] ${isLate ? 'text-rose-500 font-bold' : 'text-slate-400 font-black'} uppercase tracking-widest">
+                                    ${isLate ? 'Overdue' : (deadlineDate ? 'Deadline: ' + formatDate(deadlineDate) : 'No deadline')}
+                                </div>
+                                <div class="text-xs font-black ${statusColor}">${statusText}</div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                 <i id="st-chevron-${t.id}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                            </div>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                             <i id="st-chevron-${t.id}" data-lucide="chevron-down" class="w-5 h-5 transition-transform duration-300"></i>
+                        
+                        <div id="img-container-st-${t.id}">
+                            ${renderTaskImagesHtml(t.linkedImageIds, legacyImages)}
                         </div>
+
+                        <h4 class="font-black text-slate-800 text-lg line-clamp-2 leading-snug mt-auto break-all">${t.question}</h4>
                     </div>
                     
-                    ${legacyImages.length > 0 ? `
-                        <div class="grid grid-cols-${Math.min(3, legacyImages.length)} gap-2 mb-4">
-                            ${legacyImages.map(src => `
-                                <div class="${legacyImages.length === 1 ? 'aspect-video' : 'aspect-square'} rounded-2xl overflow-hidden border border-slate-100 relative group/img cursor-pointer">
-                                    <img src="${src}" onclick="event.stopPropagation(); app.openImageModal(this.src)" class="w-full h-full object-cover transition-transform group-hover/img:scale-105">
+                    <div id="st-body-${t.id}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
+                          <div class="p-6 border-t border-slate-100">
+                            <div class="text-slate-800 font-bold text-lg mb-6 whitespace-pre-wrap leading-relaxed border-b border-slate-200 pb-4">${t.question}</div>
+                            ${isDone || isReview ? `
+                                <div class="bg-white p-5 rounded-2xl border border-slate-200">
+                                    <div class="font-bold text-slate-800 text-lg mb-2 font-mono leading-relaxed">${isDone ? getDiffHTML(t.studentAnswer, t.correctAnswer || t.studentAnswer) : t.studentAnswer}</div>
+                                    <div class="h-px bg-slate-100 my-4"></div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-bold text-slate-400 uppercase">Status</span>
+                                        ${isDone ? `<span class="text-2xl font-black text-blue-600">${t.score} pts</span>` : `<span class="text-sm font-black text-amber-500 bg-amber-50 px-3 py-1 rounded-full">Waiting for teacher</span>`}
+                                    </div>
                                 </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-
-                    <div id="img-container-st-${t.id}">
-                        ${t.linkedImageIds && t.linkedImageIds.length > 0 ? `<div class="h-24 w-full rounded-2xl mb-4 img-skeleton"></div>` : ''}
+                               ` : `
+                               <div class="space-y-4">
+                                   <textarea id="input-${t.id}" rows="3" class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-200 focus:border-blue-500 outline-none font-bold text-slate-800 transition-all resize-none" placeholder="Your answer..."></textarea>
+                                    <button onclick="app.submitTask('${t.id}', '${t.correctAnswer}', ${t.deadline ? t.deadline.seconds : 9999999999}, '${t.answerType}')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">Submit</button>
+                               </div>
+                               `}
+                          </div>
                     </div>
-
-                    <h4 class="font-black text-slate-800 text-lg line-clamp-2 leading-snug mt-auto break-all">${t.question}</h4>
-                </div>
-                
-                <div id="st-body-${t.id}" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out bg-slate-50">
-                      <div class="p-6 border-t border-slate-100">
-                        <div class="text-slate-800 font-bold text-lg mb-6 whitespace-pre-wrap leading-relaxed border-b border-slate-200 pb-4">${t.question}</div>
-                        ${isDone || isReview ? `
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200">
-                                <div class="font-bold text-slate-800 text-lg mb-2 font-mono leading-relaxed">${isDone ? getDiffHTML(t.studentAnswer, t.correctAnswer || t.studentAnswer) : t.studentAnswer}</div>
-                                <div class="h-px bg-slate-100 my-4"></div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-bold text-slate-400 uppercase">Status</span>
-                                    ${isDone ? `<span class="text-2xl font-black text-blue-600">${t.score} pts</span>` : `<span class="text-sm font-black text-amber-500 bg-amber-50 px-3 py-1 rounded-full">Waiting for teacher</span>`}
-                                </div>
-                            </div>
-                           ` : `
-                           <div class="space-y-4">
-                               <textarea id="input-${t.id}" rows="3" class="w-full px-6 py-4 rounded-2xl bg-white border-2 border-slate-200 focus:border-blue-500 outline-none font-bold text-slate-800 transition-all resize-none" placeholder="Your answer..."></textarea>
-                                <button onclick="app.submitTask('${t.id}', '${t.correctAnswer}', ${t.deadline ? t.deadline.seconds : 9999999999}, '${t.answerType}')" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all">Submit</button>
-                           </div>
-                           `}
-                      </div>
-                </div>
-            </div>`;
-        });
-        list.innerHTML = html;
-        lucide.createIcons();
-        app.loadAllVisibleImages(tasks, true); // <--- ИСПРАВЛЕНИЕ ЗДЕСЬ
+                </div>`;
+            });
+            list.innerHTML = html;
+            lucide.createIcons();
+            app.loadAllVisibleImages(tasks, true);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            isTasksLoading = false;
+        }
     }
 
     onAuthStateChanged(auth, async (user) => {
@@ -2404,6 +2493,7 @@ const draftsSnap = await getDocs(qDrafts);
             } else {
                 const sid = localStorage.getItem('student_id');
                 if (sid) {
+                    if (currentStudentId === sid && currentStudentData) return;
                     try {
                         const snap = await getDoc(doc(db, 'artifacts', appId, 'public', 'data', 'students', sid));
                         if (snap.exists()) {
