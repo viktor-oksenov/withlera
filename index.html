@@ -450,7 +450,7 @@
                                 <textarea id="task-text" rows="3" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none font-medium text-base resize-none" placeholder="What needs to be done?"></textarea>
                                 
                                 <div>
-                                    <label class="block text-xs font-bold text-slate-400 mb-2 ml-1 uppercase tracking-wide">Images (Max 3)</label>
+                                    <label class="block text-xs font-bold text-slate-400 mb-2 ml-1 uppercase tracking-wide">Images (Max 10)</label>
                                     
                                     <div class="flex gap-2 mb-3">
                                         <input type="text" id="new-image-url" class="flex-1 px-4 py-3 rounded-xl bg-slate-50 border-2 border-transparent focus:border-indigo-500 outline-none text-sm font-medium truncate" placeholder="Paste image URL">
@@ -463,7 +463,7 @@
                                         </label>
                                     </div>
                                     
-                                    <div id="active-images-list" class="grid grid-cols-3 gap-2"></div>
+                                    <div id="active-images-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"></div>
                                 </div>
                                 
                                 <div class="bg-slate-100 p-1 rounded-xl flex gap-1">
@@ -1136,7 +1136,7 @@
                 const urlInput = document.getElementById('new-image-url');
                 const url = urlInput.value.trim();
                 if (!url) return;
-                if (currentDraftImages.length >= 3) return notify("Max 3 images allowed", "error");
+                if (currentDraftImages.length >= 10) return notify("Max 10 images allowed", "error");
                 currentDraftImages.push(url);
                 urlInput.value = '';
                 app.renderImagePreviews();
@@ -1147,18 +1147,19 @@
                 if (!files.length) return;
                 
                 const currentCount = currentDraftImages.length;
-                if (currentCount >= 3) {
-                    notify("Max 3 images allowed", "error");
+                if (currentCount >= 10) {
+                    notify("Max 10 images allowed", "error");
                     input.value = '';
                     return;
                 }
 
-                const availableSlots = 3 - currentCount;
+                const availableSlots = 10 - currentCount;
                 const filesToUpload = files.slice(0, availableSlots);
                 
                 if (files.length > availableSlots) {
-                    notify(`Only ${availableSlots} image(s) added (max 3 allowed)`, "info");
+                    notify(`Only ${availableSlots} image(s) added (max 10 allowed)`, "info");
                 }
+
                 notify("Compressing...", "info");
 
                 for (const file of filesToUpload) {
@@ -1857,7 +1858,7 @@ studentLogin: async () => {
                      )).filter(Boolean);
 
                      if (images.length > 0) {
-                         const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+                         const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 || images.length === 4 ? 'grid-cols-2' : 'grid-cols-3');
                          container.innerHTML = `
                              <div class="grid ${gridColsClass} gap-2 mb-4">
                                  ${images.map(src => `
@@ -2365,7 +2366,7 @@ const draftsSnap = await getDocs(qDrafts);
 
     function renderTaskImagesHtml(linkedImageIds, legacyImages = []) {
         if (legacyImages && legacyImages.length > 0) {
-            const gridColsClass = legacyImages.length === 1 ? 'grid-cols-1' : (legacyImages.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+            const gridColsClass = legacyImages.length === 1 ? 'grid-cols-1' : (legacyImages.length === 2 || legacyImages.length === 4 ? 'grid-cols-2' : 'grid-cols-3');
             return `
                 <div class="grid ${gridColsClass} gap-2 mb-4">
                     ${legacyImages.map(src => `
@@ -2381,7 +2382,7 @@ const draftsSnap = await getDocs(qDrafts);
             const allCached = linkedImageIds.every(id => window.appImageCache[id]);
             if (allCached) {
                 const images = linkedImageIds.map(id => window.appImageCache[id]).filter(Boolean);
-                const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+                const gridColsClass = images.length === 1 ? 'grid-cols-1' : (images.length === 2 || images.length === 4 ? 'grid-cols-2' : 'grid-cols-3');
                 return `
                     <div class="grid ${gridColsClass} gap-2 mb-4">
                         ${images.map(src => `
